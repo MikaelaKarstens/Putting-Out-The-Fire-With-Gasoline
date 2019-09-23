@@ -25,7 +25,7 @@ Table2ML <- selection(factor(first_TC_alt) ~ Devel + polity2 + area_1000 + lmtne
                      Country_Age_Sq + Country_Age_Cube,
                    factor(new_TC_dummy) ~ Peace_wTC + Fighting_wTC + Absorbed_t20 + Forceful_t20 +
                      Peaceful_t20 + Promoted_t20 + TC_tally + new_TC_spline + newTC_spline_sq + newTC_spline_cube,
-                   data = data)
+                   , data = data)
 
 summary(Table2) 
 summary(Table2ML)
