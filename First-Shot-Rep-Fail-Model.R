@@ -31,6 +31,9 @@ table(SDat$statename)
 TCDat <- read.csv("Survival-Data-TC.csv")
 names(TCDat)
 
+reObj <- Surv(TCDat$alt_start,TCDat$alt_stop,TCDat$new_TC_dummy)
+plotEvents(reObj, TCDat)
+
 TC1st <- TCDat[TCDat$event_num==1,]
 TC.1st<-Surv(TC1st$alt_start,TC1st$alt_stop,TC1st$new_TC_dummy)
 
@@ -115,10 +118,40 @@ cox.F2<-coxph(s~ Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
 summary(cox.F2) 
 stargazer(cox.F2)
 
+###### Only set of countries with more than 1 TC
+
+TC2On <- TCDat[TCDat$event_num>=2,]
+TC.2On.Elapsed<-Surv(TC2On$alt_start,TC2On$alt_stop,TC2On$new_TC_dummy)
+TC.2On.Gap<-Surv(TC2On$start,TC2On$stop,TC2On$new_TC_dummy)
+
+TC.Cox.PWPE.2On<-coxph(TC.2On.Gap ~ Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                    +strata(event_num)+cluster(ccode),data=TC2On, method="efron")
+
+summary(TC.Cox.PWPE.2On)
+
+
+cox.F.2On<-coxph(TC.2On.Gap ~ Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+              +polity2 + area_1000 + lmtnest + ELF + Country_Age
+              +frailty.gaussian(ccode),data=TC2On) 
+
+summary(cox.F.2On)
+
+cox.F.2On.t10<-coxph(TC.2On.Gap ~ Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                 +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                 +frailty.gaussian(ccode),data=TC2On) 
+
+summary(cox.F.2On.t10)
+
+
+
+cox.F.2On2<-coxph(TC.2On.Gap ~ Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                 +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                 +frailty.gamma(ccode),data=TC2On) 
+
+summary(cox.F.2On2)
 
 ###########
-
-
 
 reObj <- with(SDat, reSurv(t.start, t.stop, statename, event))
 plotEvents(reObj~SDat, SDat)
