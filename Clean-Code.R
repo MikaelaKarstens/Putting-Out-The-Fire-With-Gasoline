@@ -10,7 +10,10 @@ library(lubridate) #Used for survival data formatting
 library(survival)
 library(stargazer)
 library(reReg) #recurrent events package
+<<<<<<< HEAD
 library(gmodels)
+=======
+>>>>>>> 92dbb37f9834825cbfad3e2491ca8e3c2d6180e4
 
 options(scipen = 999) # no scientific notation
 
@@ -18,6 +21,7 @@ options(scipen = 999) # no scientific notation
 
 TCDat <- read.csv("Survival-Data-TC.csv")
 names(TCDat)
+<<<<<<< HEAD
 
 # Summary Statistics & Crosstabs
 
@@ -143,3 +147,5 @@ summary(TC.AG.2On.2)
 
 
 
+=======
+>>>>>>> 92dbb37f9834825cbfad3e2491ca8e3c2d6180e4
