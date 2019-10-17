@@ -1,4 +1,4 @@
-# Repeat Failure Model
+# Repeat Failure Model 
 
 library(foreign) # download .dta files for Stata < 13
 library(haven) # download .dta files for Stata 13+

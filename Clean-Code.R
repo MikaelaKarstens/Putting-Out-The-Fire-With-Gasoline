@@ -38,7 +38,7 @@ CrossTable(TCDat$new_TC_dummy, TCDat$Fighting_wTC)
 
 CrossTable(TCDat$new_TC_dummy, TCDat$polity2)
 
-plot(TCDat$new_TC_dummy, TCDat$area_1000)
+plot(TCDat$new_TC_dummy, TCDat$area_1000) 
 
 plot(TCDat$new_TC_dummy, TCDat$lmtnest)
 
