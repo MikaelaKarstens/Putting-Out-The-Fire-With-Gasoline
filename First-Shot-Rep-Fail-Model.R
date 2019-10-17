@@ -138,13 +138,13 @@ cox.F.2On<-coxph(TC.2On.Gap ~ Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promo
 summary(cox.F.2On)
 
 cox.F.2On.t10<-coxph(TC.2On.Gap ~ Fighting_wTC + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
-                 +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                 +polity2 + area_1000 + lmtnest + ELF
                  +frailty.gaussian(ccode),data=TC2On) 
 
 summary(cox.F.2On.t10)
 
 cox.F.2On.t10.persist<-coxph(TC.2On.Gap ~ TC_persists_alt + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
-                     +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                     +polity2 + area_1000 + lmtnest + ELF
                      +frailty.gaussian(ccode),data=TC2On) 
 
 summary(cox.F.2On.t10.persist)
