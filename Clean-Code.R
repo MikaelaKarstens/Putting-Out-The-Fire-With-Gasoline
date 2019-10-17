@@ -19,6 +19,7 @@ options(scipen = 999) # no scientific notation
 TCDat <- read.csv("Survival-Data-TC.csv")
 names(TCDat)
 
+
 # Summary Statistics & Crosstabs
 
 CrossTable(TCDat$new_TC_dummy, TCDat$Absorbed_t20)
@@ -139,7 +140,3 @@ summary(TC.AG.2On.1)
 TC.AG.2On.2 <- coxph(TC2On.Gap ~ Peace_wTC + Fighting_wTC + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20 
                      +cluster(ccode),data=TC2On, method="efron")
 summary(TC.AG.2On.2)
-
-
-
-
