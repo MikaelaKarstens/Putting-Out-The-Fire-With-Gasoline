@@ -9,7 +9,7 @@ library(survival)
 library(stargazer)
 library(reReg) #recurrent events package
 
-options(scipen = 999) # no scientific notation
+options(scipen = 50) # no scientific notation
 
 #setwd("~/State-Making-Strategies")
 data <- read_dta("Deterring_TC.dta") #Uses haven

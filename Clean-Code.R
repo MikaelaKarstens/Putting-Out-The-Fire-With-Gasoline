@@ -11,8 +11,9 @@ library(survival)
 library(stargazer)
 library(reReg) #recurrent events package
 library(gmodels)
+library(Hmisc)
 
-options(scipen = 999) # no scientific notation
+options(scipen = 50) # no scientific notation
 
 # setwd("C:/Users/mjw65/Dropbox/State Making Strategies/State-Making-Strategies") #209 Pond Lab
 
@@ -138,25 +139,25 @@ TC15.Gap<-Surv(TC15$start,TC15$stop,TC15$new_TC_dummy)
 
 # Anderson-Gill Model - Variance Correction
 
-TC.AG.2On.1 <- coxph(TC2On.Gap ~ TempExisting + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+TC.AG.2On.1 <- coxph(TC2On.Gap ~ Peace_wTC + Fighting_wTC + Absorbed_ExpDecay_10 + Forceful_ExpDecay_10 + Peaceful_ExpDecay_10 + Promoted_ExpDecay_10
                      +polity2 + area_1000 + lmtnest + ELF   
                     +cluster(ccode),data=TC2On, method="efron")
 summary(TC.AG.2On.1)
 
-TC.AG.2On.2 <- coxph(TC2On.Elapsed ~ TempExisting + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+TC.AG.2On.2 <- coxph(TC2On.Elapsed ~ Peace_wTC + Fighting_wTC + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
                      +polity2 + area_1000 + lmtnest + ELF   
                      +cluster(ccode),data=TC2On, method="efron")
 summary(TC.AG.2On.2)
 
 # Conditional PWP Model
 
-TC.PWP.1 <-coxph(TCDat.Gap ~ TempExisting + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
-                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+TC.PWP.1 <-coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                    +polity2 + area_1000 + lmtnest + ELF
                     +strata(event_num) + cluster(ccode),data=TCDat, method="efron")
 
 summary(TC.PWP.1)
 
-TC.PWP.2 <-coxph(TCDat.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+TC.PWP.2 <-coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
                      +polity2 + area_1000 + lmtnest + ELF + Country_Age
                      +strata(event_num) + cluster(ccode),data=TCDat, method="efron")
 
@@ -164,7 +165,7 @@ summary(TC.PWP.2)
 
 # Cox Gap Time with Gaussian Frailty
 
-TC.GausFrail<-coxph(TCDat.Gap ~ TempExisting + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+TC.GausFrail<-coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
              +polity2 + area_1000 + lmtnest + ELF + Country_Age
              +frailty.gaussian(ccode),data=TCDat)
 
@@ -172,72 +173,567 @@ summary(TC.GausFrail)
 
 # Cox Gap Time with Gamma Frailty
 
-TC.GammaFrail<-coxph(TCDat.Gap ~ TempExisting + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+TC.GammaFrail<-coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
                     +polity2 + area_1000 + lmtnest + ELF + Country_Age
                     +frailty.gamma(ccode),data=TCDat)
 
 summary(TC.GammaFrail) 
 
-# Stratified models
+# Stratified models for gaussian frailty
 
- TC1.Frailty <-coxph(TC1.Gap ~ TempExisting 
-                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+TC1.Frailty.Gaus <-coxph(TC1.Gap ~ polity2 + area_1000 + lmtnest + ELF 
                     +frailty.gaussian(ccode),data=TC1) 
 
-TC2.Frailty <-coxph(TC2.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
-                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+###########################################################
+
+TC2.Frailty.Gaus.t10 <-coxph(TC2.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                    +polity2 + area_1000 + lmtnest + ELF 
                     +frailty.gaussian(ccode),data=TC2) 
 
-TC3.Frailty <-coxph(TC3.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
-                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+TC2.Frailty.Gaus.t20 <-coxph(TC2.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gaussian(ccode),data=TC2) 
+
+TC2.Frailty.Gaus.tever <-coxph(TC2.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_end + Forceful_end + Peaceful_end + Promoted_end
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gaussian(ccode),data=TC2) 
+
+TC2.Frailty.Gaus.LinDecay <-coxph(TC2.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_LinDecay + Forceful_LinDecay + Peaceful_LinDecay + Promoted_LinDecay
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gaussian(ccode),data=TC2) 
+
+TC2.Frailty.Gaus.ExpDecay5 <-coxph(TC2.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_5 + Forceful_ExpDecay_5 + Peaceful_ExpDecay_5 + Promoted_ExpDecay_5
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gaussian(ccode),data=TC2) 
+
+TC2.Frailty.Gaus.ExpDecay10 <-coxph(TC2.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_10 + Forceful_ExpDecay_10 + Peaceful_ExpDecay_10 + Promoted_ExpDecay_10
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gaussian(ccode),data=TC2) 
+
+TC2.Frailty.Gaus.ExpDecay15 <-coxph(TC2.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_15 + Forceful_ExpDecay_15 + Peaceful_ExpDecay_15 + Promoted_ExpDecay_15
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gaussian(ccode),data=TC2) 
+
+TC2.Frailty.Gaus.ExpDecay20 <-coxph(TC2.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_20 + Forceful_ExpDecay_20 + Peaceful_ExpDecay_20 + Promoted_ExpDecay_20
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC2) 
+
+##############################################
+
+TC3.Frailty.Gaus.t10 <-coxph(TC3.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                    +polity2 + area_1000 + lmtnest + ELF 
                     +frailty.gaussian(ccode),data=TC3) 
 
-TC4.Frailty <-coxph(TC4.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
-                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+TC3.Frailty.Gaus.t20 <-coxph(TC3.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gaussian(ccode),data=TC3) 
+
+TC3.Frailty.Gaus.tever <-coxph(TC3.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_end + Forceful_end + Peaceful_end + Promoted_end
+                               +polity2 + area_1000 + lmtnest + ELF 
+                               +frailty.gaussian(ccode),data=TC3) 
+
+TC3.Frailty.Gaus.LinDecay <-coxph(TC3.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_LinDecay + Forceful_LinDecay + Peaceful_LinDecay + Promoted_LinDecay
+                                  +polity2 + area_1000 + lmtnest + ELF 
+                                  +frailty.gaussian(ccode),data=TC3) 
+
+TC3.Frailty.Gaus.ExpDecay5 <-coxph(TC3.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_5 + Forceful_ExpDecay_5 + Peaceful_ExpDecay_5 + Promoted_ExpDecay_5
+                                   +polity2 + area_1000 + lmtnest + ELF 
+                                   +frailty.gaussian(ccode),data=TC3) 
+
+TC3.Frailty.Gaus.ExpDecay10 <-coxph(TC3.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_10 + Forceful_ExpDecay_10 + Peaceful_ExpDecay_10 + Promoted_ExpDecay_10
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC3) 
+
+TC3.Frailty.Gaus.ExpDecay15 <-coxph(TC3.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_15 + Forceful_ExpDecay_15 + Peaceful_ExpDecay_15 + Promoted_ExpDecay_15
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC3) 
+
+TC3.Frailty.Gaus.ExpDecay20 <-coxph(TC3.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_20 + Forceful_ExpDecay_20 + Peaceful_ExpDecay_20 + Promoted_ExpDecay_20
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC3) 
+
+##############################################
+
+TC4.Frailty.Gaus.t10 <-coxph(TC4.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                    +polity2 + area_1000 + lmtnest + ELF 
                     +frailty.gaussian(ccode),data=TC4) 
 
-TC5.Frailty <-coxph(TC5.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
-                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+TC4.Frailty.Gaus.t20 <-coxph(TC4.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gaussian(ccode),data=TC4)
+
+TC4.Frailty.Gaus.tever <-coxph(TC4.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_end + Forceful_end + Peaceful_end + Promoted_end
+                               +polity2 + area_1000 + lmtnest + ELF 
+                               +frailty.gaussian(ccode),data=TC4) 
+
+TC4.Frailty.Gaus.LinDecay <-coxph(TC4.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_LinDecay + Forceful_LinDecay + Peaceful_LinDecay + Promoted_LinDecay
+                                  +polity2 + area_1000 + lmtnest + ELF 
+                                  +frailty.gaussian(ccode),data=TC4) 
+
+TC4.Frailty.Gaus.ExpDecay5 <-coxph(TC4.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_5 + Forceful_ExpDecay_5 + Peaceful_ExpDecay_5 + Promoted_ExpDecay_5
+                                   +polity2 + area_1000 + lmtnest + ELF 
+                                   +frailty.gaussian(ccode),data=TC4) 
+
+TC4.Frailty.Gaus.ExpDecay10 <-coxph(TC4.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_10 + Forceful_ExpDecay_10 + Peaceful_ExpDecay_10 + Promoted_ExpDecay_10
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC4) 
+
+TC4.Frailty.Gaus.ExpDecay15 <-coxph(TC4.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_15 + Forceful_ExpDecay_15 + Peaceful_ExpDecay_15 + Promoted_ExpDecay_15
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC4) 
+
+TC4.Frailty.Gaus.ExpDecay20 <-coxph(TC4.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_20 + Forceful_ExpDecay_20 + Peaceful_ExpDecay_20 + Promoted_ExpDecay_20
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC4) 
+
+##############################################
+
+TC5.Frailty.Gaus.t10 <-coxph(TC5.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                    +polity2 + area_1000 + lmtnest + ELF 
                     +frailty.gaussian(ccode),data=TC5) 
 
-TC6.Frailty <-coxph(TC6.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
-                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+TC5.Frailty.Gaus.t20 <-coxph(TC5.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gaussian(ccode),data=TC5) 
+
+TC5.Frailty.Gaus.tever <-coxph(TC5.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_end + Forceful_end + Peaceful_end + Promoted_end
+                               +polity2 + area_1000 + lmtnest + ELF 
+                               +frailty.gaussian(ccode),data=TC5) 
+
+TC5.Frailty.Gaus.LinDecay <-coxph(TC5.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_LinDecay + Forceful_LinDecay + Peaceful_LinDecay + Promoted_LinDecay
+                                  +polity2 + area_1000 + lmtnest + ELF 
+                                  +frailty.gaussian(ccode),data=TC5) 
+
+TC5.Frailty.Gaus.ExpDecay5 <-coxph(TC5.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_5 + Forceful_ExpDecay_5 + Peaceful_ExpDecay_5 + Promoted_ExpDecay_5
+                                   +polity2 + area_1000 + lmtnest + ELF 
+                                   +frailty.gaussian(ccode),data=TC5) 
+
+TC5.Frailty.Gaus.ExpDecay10 <-coxph(TC5.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_10 + Forceful_ExpDecay_10 + Peaceful_ExpDecay_10 + Promoted_ExpDecay_10
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC5) 
+
+TC5.Frailty.Gaus.ExpDecay15 <-coxph(TC5.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_15 + Forceful_ExpDecay_15 + Peaceful_ExpDecay_15 + Promoted_ExpDecay_15
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC5) 
+
+TC5.Frailty.Gaus.ExpDecay20 <-coxph(TC5.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_20 + Forceful_ExpDecay_20 + Peaceful_ExpDecay_20 + Promoted_ExpDecay_20
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC5) 
+
+##############################################
+
+TC6.Frailty.Gaus.t10 <-coxph(TC6.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                    +polity2 + area_1000 + lmtnest + ELF 
                     +frailty.gaussian(ccode),data=TC6) 
 
-TC7.Frailty <-coxph(TC7.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
-                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+TC6.Frailty.Gaus.t20 <-coxph(TC6.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gaussian(ccode),data=TC6) 
+
+TC6.Frailty.Gaus.tever <-coxph(TC6.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_end + Forceful_end + Peaceful_end + Promoted_end
+                               +polity2 + area_1000 + lmtnest + ELF 
+                               +frailty.gaussian(ccode),data=TC6) 
+
+TC6.Frailty.Gaus.LinDecay <-coxph(TC6.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_LinDecay + Forceful_LinDecay + Peaceful_LinDecay + Promoted_LinDecay
+                                  +polity2 + area_1000 + lmtnest + ELF 
+                                  +frailty.gaussian(ccode),data=TC6) 
+
+TC6.Frailty.Gaus.ExpDecay5 <-coxph(TC6.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_5 + Forceful_ExpDecay_5 + Peaceful_ExpDecay_5 + Promoted_ExpDecay_5
+                                   +polity2 + area_1000 + lmtnest + ELF 
+                                   +frailty.gaussian(ccode),data=TC6) 
+
+TC6.Frailty.Gaus.ExpDecay10 <-coxph(TC6.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_10 + Forceful_ExpDecay_10 + Peaceful_ExpDecay_10 + Promoted_ExpDecay_10
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC6) 
+
+TC6.Frailty.Gaus.ExpDecay15 <-coxph(TC6.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_15 + Forceful_ExpDecay_15 + Peaceful_ExpDecay_15 + Promoted_ExpDecay_15
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC6) 
+
+TC6.Frailty.Gaus.ExpDecay20 <-coxph(TC6.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_20 + Forceful_ExpDecay_20 + Peaceful_ExpDecay_20 + Promoted_ExpDecay_20
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC6) 
+
+##############################################
+
+TC7.Frailty.Gaus.t10 <-coxph(TC7.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                    +polity2 + area_1000 + lmtnest + ELF 
                     +frailty.gaussian(ccode),data=TC7) 
 
-TC8.Frailty <-coxph(TC8.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
-                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+TC7.Frailty.Gaus.t20 <-coxph(TC7.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gaussian(ccode),data=TC7)
+
+TC7.Frailty.Gaus.tever <-coxph(TC7.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_end + Forceful_end + Peaceful_end + Promoted_end
+                               +polity2 + area_1000 + lmtnest + ELF 
+                               +frailty.gaussian(ccode),data=TC7) 
+
+TC7.Frailty.Gaus.LinDecay <-coxph(TC7.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_LinDecay + Forceful_LinDecay + Peaceful_LinDecay + Promoted_LinDecay
+                                  +polity2 + area_1000 + lmtnest + ELF 
+                                  +frailty.gaussian(ccode),data=TC7) 
+
+TC7.Frailty.Gaus.ExpDecay5 <-coxph(TC7.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_5 + Forceful_ExpDecay_5 + Peaceful_ExpDecay_5 + Promoted_ExpDecay_5
+                                   +polity2 + area_1000 + lmtnest + ELF 
+                                   +frailty.gaussian(ccode),data=TC7) 
+
+TC7.Frailty.Gaus.ExpDecay10 <-coxph(TC7.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_10 + Forceful_ExpDecay_10 + Peaceful_ExpDecay_10 + Promoted_ExpDecay_10
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC7) 
+
+TC7.Frailty.Gaus.ExpDecay15 <-coxph(TC7.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_15 + Forceful_ExpDecay_15 + Peaceful_ExpDecay_15 + Promoted_ExpDecay_15
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC7) 
+
+TC7.Frailty.Gaus.ExpDecay20 <-coxph(TC7.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_20 + Forceful_ExpDecay_20 + Peaceful_ExpDecay_20 + Promoted_ExpDecay_20
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC7) 
+
+##############################################
+
+TC8.Frailty.Gaus.t10 <-coxph(TC8.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                    +polity2 + area_1000 + lmtnest + ELF 
                     +frailty.gaussian(ccode),data=TC8) 
 
-TC9.Frailty <-coxph(TC9.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
-                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+TC8.Frailty.Gaus.t20 <-coxph(TC8.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gaussian(ccode),data=TC8)
+
+TC8.Frailty.Gaus.tever <-coxph(TC8.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_end + Forceful_end + Peaceful_end + Promoted_end
+                               +polity2 + area_1000 + lmtnest + ELF 
+                               +frailty.gaussian(ccode),data=TC8) 
+
+TC8.Frailty.Gaus.LinDecay <-coxph(TC8.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_LinDecay + Forceful_LinDecay + Peaceful_LinDecay + Promoted_LinDecay
+                                  +polity2 + area_1000 + lmtnest + ELF 
+                                  +frailty.gaussian(ccode),data=TC8) 
+
+TC8.Frailty.Gaus.ExpDecay5 <-coxph(TC8.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_5 + Forceful_ExpDecay_5 + Peaceful_ExpDecay_5 + Promoted_ExpDecay_5
+                                   +polity2 + area_1000 + lmtnest + ELF 
+                                   +frailty.gaussian(ccode),data=TC8) 
+
+TC8.Frailty.Gaus.ExpDecay10 <-coxph(TC8.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_10 + Forceful_ExpDecay_10 + Peaceful_ExpDecay_10 + Promoted_ExpDecay_10
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC8) 
+
+TC8.Frailty.Gaus.ExpDecay15 <-coxph(TC8.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_15 + Forceful_ExpDecay_15 + Peaceful_ExpDecay_15 + Promoted_ExpDecay_15
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC8) 
+
+TC8.Frailty.Gaus.ExpDecay20 <-coxph(TC8.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_20 + Forceful_ExpDecay_20 + Peaceful_ExpDecay_20 + Promoted_ExpDecay_20
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC8) 
+
+##############################################
+
+TC9.Frailty.Gaus.t10 <-coxph(TC9.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                    +polity2 + area_1000 + lmtnest + ELF 
                     +frailty.gaussian(ccode),data=TC9) 
 
-TC10.Frailty <-coxph(TC10.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
-                     +polity2 + area_1000 + lmtnest + ELF + Country_Age
+TC9.Frailty.Gaus.t20 <-coxph(TC9.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gaussian(ccode),data=TC9)
+
+TC9.Frailty.Gaus.tever <-coxph(TC9.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_end + Forceful_end + Peaceful_end + Promoted_end
+                               +polity2 + area_1000 + lmtnest + ELF 
+                               +frailty.gaussian(ccode),data=TC9) 
+
+TC9.Frailty.Gaus.LinDecay <-coxph(TC9.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_LinDecay + Forceful_LinDecay + Peaceful_LinDecay + Promoted_LinDecay
+                                  +polity2 + area_1000 + lmtnest + ELF 
+                                  +frailty.gaussian(ccode),data=TC9) 
+
+TC9.Frailty.Gaus.ExpDecay5 <-coxph(TC9.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_5 + Forceful_ExpDecay_5 + Peaceful_ExpDecay_5 + Promoted_ExpDecay_5
+                                   +polity2 + area_1000 + lmtnest + ELF 
+                                   +frailty.gaussian(ccode),data=TC9) 
+
+TC9.Frailty.Gaus.ExpDecay10 <-coxph(TC9.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_10 + Forceful_ExpDecay_10 + Peaceful_ExpDecay_10 + Promoted_ExpDecay_10
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC9) 
+
+TC9.Frailty.Gaus.ExpDecay15 <-coxph(TC9.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_15 + Forceful_ExpDecay_15 + Peaceful_ExpDecay_15 + Promoted_ExpDecay_15
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC9) 
+
+TC9.Frailty.Gaus.ExpDecay20 <-coxph(TC9.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_20 + Forceful_ExpDecay_20 + Peaceful_ExpDecay_20 + Promoted_ExpDecay_20
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC9) 
+
+##############################################
+
+TC10.Frailty.Gaus.t10 <-coxph(TC10.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                     +polity2 + area_1000 + lmtnest + ELF 
                      +frailty.gaussian(ccode),data=TC10) 
 
-TC11.Frailty <-coxph(TC11.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
-                     +polity2 + area_1000 + lmtnest + ELF + Country_Age
+TC10.Frailty.Gaus.t20 <-coxph(TC10.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                              +polity2 + area_1000 + lmtnest + ELF 
+                              +frailty.gaussian(ccode),data=TC10)
+
+TC10.Frailty.Gaus.tever <-coxph(TC10.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_end + Forceful_end + Peaceful_end + Promoted_end
+                               +polity2 + area_1000 + lmtnest + ELF 
+                               +frailty.gaussian(ccode),data=TC10) 
+
+TC10.Frailty.Gaus.LinDecay <-coxph(TC10.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_LinDecay + Forceful_LinDecay + Peaceful_LinDecay + Promoted_LinDecay
+                                  +polity2 + area_1000 + lmtnest + ELF 
+                                  +frailty.gaussian(ccode),data=TC10) 
+
+TC10.Frailty.Gaus.ExpDecay5 <-coxph(TC10.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_5 + Forceful_ExpDecay_5 + Peaceful_ExpDecay_5 + Promoted_ExpDecay_5
+                                   +polity2 + area_1000 + lmtnest + ELF 
+                                   +frailty.gaussian(ccode),data=TC10) 
+
+TC10.Frailty.Gaus.ExpDecay10 <-coxph(TC10.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_10 + Forceful_ExpDecay_10 + Peaceful_ExpDecay_10 + Promoted_ExpDecay_10
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC10) 
+
+TC10.Frailty.Gaus.ExpDecay15 <-coxph(TC10.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_15 + Forceful_ExpDecay_15 + Peaceful_ExpDecay_15 + Promoted_ExpDecay_15
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC10) 
+
+TC10.Frailty.Gaus.ExpDecay20 <-coxph(TC10.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_20 + Forceful_ExpDecay_20 + Peaceful_ExpDecay_20 + Promoted_ExpDecay_20
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC10) 
+
+##############################################
+
+TC11.Frailty.Gaus.t10 <-coxph(TC11.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                     +polity2 + area_1000 + lmtnest + ELF 
                      +frailty.gaussian(ccode),data=TC11) 
 
-TC12.Frailty <-coxph(TC12.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
-                     +polity2 + area_1000 + lmtnest + ELF + Country_Age
-                     +frailty.gaussian(ccode),data=TC12) 
+TC11.Frailty.Gaus.t20 <-coxph(TC11.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                              +polity2 + area_1000 + lmtnest + ELF 
+                              +frailty.gaussian(ccode),data=TC11)
 
-TC13.Frailty <-coxph(TC13.Gap ~ TC_persists_alt + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
-                     +polity2 + area_1000 + lmtnest + ELF + Country_Age
-                     +frailty.gaussian(ccode),data=TC13) 
+TC11.Frailty.Gaus.tever <-coxph(TC11.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_end + Forceful_end + Peaceful_end + Promoted_end
+                                +polity2 + area_1000 + lmtnest + ELF 
+                                +frailty.gaussian(ccode),data=TC11) 
 
-TC14.Frailty <-coxph(TC14.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
-                     +polity2 + area_1000 + lmtnest + ELF + Country_Age
-                     +frailty.gaussian(ccode),data=TC14) 
+TC11.Frailty.Gaus.LinDecay <-coxph(TC11.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_LinDecay + Forceful_LinDecay + Peaceful_LinDecay + Promoted_LinDecay
+                                   +polity2 + area_1000 + lmtnest + ELF 
+                                   +frailty.gaussian(ccode),data=TC11) 
 
-TC15.Frailty <-coxph(TC15.Gap ~ TC_persists_alt + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
-                     +polity2 + area_1000 + lmtnest + ELF + Country_Age
-                     +frailty.gaussian(ccode),data=TC15) 
+TC11.Frailty.Gaus.ExpDecay5 <-coxph(TC11.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_5 + Forceful_ExpDecay_5 + Peaceful_ExpDecay_5 + Promoted_ExpDecay_5
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC11) 
 
+TC11.Frailty.Gaus.ExpDecay10 <-coxph(TC11.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_10 + Forceful_ExpDecay_10 + Peaceful_ExpDecay_10 + Promoted_ExpDecay_10
+                                     +polity2 + area_1000 + lmtnest + ELF 
+                                     +frailty.gaussian(ccode),data=TC11) 
+
+TC11.Frailty.Gaus.ExpDecay15 <-coxph(TC11.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_15 + Forceful_ExpDecay_15 + Peaceful_ExpDecay_15 + Promoted_ExpDecay_15
+                                     +polity2 + area_1000 + lmtnest + ELF 
+                                     +frailty.gaussian(ccode),data=TC11) 
+
+TC11.Frailty.Gaus.ExpDecay20 <-coxph(TC11.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_20 + Forceful_ExpDecay_20 + Peaceful_ExpDecay_20 + Promoted_ExpDecay_20
+                                     +polity2 + area_1000 + lmtnest + ELF 
+                                     +frailty.gaussian(ccode),data=TC11) 
+
+
+##############################################
+
+summary(TC1.Frailty.Gaus)
+summary(TC2.Frailty.Gaus.t10)
+summary(TC3.Frailty.Gaus.t10)
+summary(TC4.Frailty.Gaus.t10)
+summary(TC5.Frailty.Gaus.t10)
+summary(TC6.Frailty.Gaus.t10) # 10 events
+summary(TC7.Frailty.Gaus.t10) # 6 events
+summary(TC8.Frailty.Gaus.t10) # 4 events, goes haywire
+# 9-15 would not converge. 
+
+summary(TC2.Frailty.Gaus.t20)
+summary(TC3.Frailty.Gaus.t20)
+summary(TC4.Frailty.Gaus.t20)
+summary(TC5.Frailty.Gaus.t20)
+summary(TC6.Frailty.Gaus.t20) # NOT GOOD
+summary(TC7.Frailty.Gaus.t20)
+summary(TC8.Frailty.Gaus.t20)
+summary(TC9.Frailty.Gaus.t20)
+# 10-15 didn't converge
+
+summary(TC2.Frailty.Gaus.tever)
+summary(TC3.Frailty.Gaus.tever)
+summary(TC4.Frailty.Gaus.tever)
+summary(TC5.Frailty.Gaus.tever)
+summary(TC6.Frailty.Gaus.tever) 
+summary(TC7.Frailty.Gaus.tever)
+summary(TC8.Frailty.Gaus.tever)
+summary(TC9.Frailty.Gaus.tever) #No convergence
+
+summary(TC2.Frailty.Gaus.LinDecay)
+summary(TC3.Frailty.Gaus.LinDecay)
+summary(TC4.Frailty.Gaus.LinDecay)
+summary(TC5.Frailty.Gaus.LinDecay)
+summary(TC6.Frailty.Gaus.LinDecay) 
+summary(TC7.Frailty.Gaus.LinDecay)
+summary(TC8.Frailty.Gaus.LinDecay)
+summary(TC9.Frailty.Gaus.LinDecay)
+
+summary(TC2.Frailty.Gaus.ExpDecay5)
+summary(TC3.Frailty.Gaus.ExpDecay5)
+summary(TC4.Frailty.Gaus.ExpDecay5)
+summary(TC5.Frailty.Gaus.ExpDecay5)
+summary(TC6.Frailty.Gaus.ExpDecay5) 
+summary(TC7.Frailty.Gaus.ExpDecay5)
+summary(TC8.Frailty.Gaus.ExpDecay5)
+summary(TC9.Frailty.Gaus.ExpDecay5)
+
+summary(TC2.Frailty.Gaus.ExpDecay10)
+summary(TC3.Frailty.Gaus.ExpDecay10)
+summary(TC4.Frailty.Gaus.ExpDecay10)
+summary(TC5.Frailty.Gaus.ExpDecay10)
+summary(TC6.Frailty.Gaus.ExpDecay10) 
+summary(TC7.Frailty.Gaus.ExpDecay10)
+summary(TC8.Frailty.Gaus.ExpDecay10)
+summary(TC9.Frailty.Gaus.ExpDecay10)
+
+summary(TC2.Frailty.Gaus.ExpDecay15)
+summary(TC3.Frailty.Gaus.ExpDecay15)
+summary(TC4.Frailty.Gaus.ExpDecay15)
+summary(TC5.Frailty.Gaus.ExpDecay15)
+summary(TC6.Frailty.Gaus.ExpDecay15) 
+summary(TC7.Frailty.Gaus.ExpDecay15)
+summary(TC8.Frailty.Gaus.ExpDecay15)
+summary(TC9.Frailty.Gaus.ExpDecay15)
+
+summary(TC2.Frailty.Gaus.ExpDecay20)
+summary(TC3.Frailty.Gaus.ExpDecay20)
+summary(TC4.Frailty.Gaus.ExpDecay20)
+summary(TC5.Frailty.Gaus.ExpDecay20)
+summary(TC6.Frailty.Gaus.ExpDecay20) 
+summary(TC7.Frailty.Gaus.ExpDecay20)
+summary(TC8.Frailty.Gaus.ExpDecay20)
+summary(TC9.Frailty.Gaus.ExpDecay20)
+
+# Stratified models for gamma frailty
+
+TC1.Frailty.Gam <-coxph(TC1.Gap ~ polity2 + area_1000 + lmtnest + ELF 
+                         +frailty.gamma(ccode),data=TC1) 
+
+TC2.Frailty.Gam.t10 <-coxph(TC2.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gamma(ccode),data=TC2) 
+
+TC2.Frailty.Gam.t20 <-coxph(TC2.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gamma(ccode),data=TC2) 
+
+TC3.Frailty.Gam.t10 <-coxph(TC3.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gamma(ccode),data=TC3) 
+
+TC3.Frailty.Gam.t20 <-coxph(TC3.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gamma(ccode),data=TC3) 
+
+TC4.Frailty.Gam.t10 <-coxph(TC4.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gamma(ccode),data=TC4) 
+
+TC4.Frailty.Gam.t20 <-coxph(TC4.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gamma(ccode),data=TC4) 
+
+TC5.Frailty.Gam.t10 <-coxph(TC5.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gamma(ccode),data=TC5) 
+
+TC5.Frailty.Gam.t20 <-coxph(TC5.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gamma(ccode),data=TC5) 
+
+TC6.Frailty.Gam.t10 <-coxph(TC6.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gamma(ccode),data=TC6) 
+
+TC6.Frailty.Gam.t20 <-coxph(TC6.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gamma(ccode),data=TC6) 
+
+TC7.Frailty.Gam.t10 <-coxph(TC7.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gamma(ccode),data=TC7) 
+
+TC7.Frailty.Gam.t20 <-coxph(TC7.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gamma(ccode),data=TC7) 
+
+TC8.Frailty.Gam.t10 <-coxph(TC8.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gamma(ccode),data=TC8) 
+
+TC8.Frailty.Gam.t20 <-coxph(TC8.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gamma(ccode),data=TC8) 
+
+TC9.Frailty.Gam.t10 <-coxph(TC9.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gamma(ccode),data=TC9) 
+
+TC9.Frailty.Gam.t20 <-coxph(TC9.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gamma(ccode),data=TC9) 
+
+TC10.Frailty.Gam.t10 <-coxph(TC10.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                              +polity2 + area_1000 + lmtnest + ELF 
+                              +frailty.gamma(ccode),data=TC10) 
+
+TC10.Frailty.Gam.t20 <-coxph(TC10.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                              +polity2 + area_1000 + lmtnest + ELF 
+                              +frailty.gamma(ccode),data=TC10) 
+
+TC11.Frailty.Gam.t10 <-coxph(TC11.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                              +polity2 + area_1000 + lmtnest + ELF 
+                              +frailty.gamma(ccode),data=TC11) 
+
+TC11.Frailty.Gam.t20 <-coxph(TC11.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                              +polity2 + area_1000 + lmtnest + ELF 
+                              +frailty.gamma(ccode),data=TC11)
+
+TC12.Frailty.Gam.t10 <-coxph(TC12.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                              +polity2 + area_1000 + lmtnest + ELF 
+                              +frailty.gamma(ccode),data=TC12) 
+
+TC12.Frailty.Gam.t20 <-coxph(TC12.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                              +polity2 + area_1000 + lmtnest + ELF 
+                              +frailty.gamma(ccode),data=TC12) 
+
+TC13.Frailty.Gam.t10 <-coxph(TC13.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                              +polity2 + area_1000 + lmtnest + ELF 
+                              +frailty.gamma(ccode),data=TC13) 
+
+TC13.Frailty.Gam.t20 <-coxph(TC13.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                              +polity2 + area_1000 + lmtnest + ELF 
+                              +frailty.gamma(ccode),data=TC13) 
+
+TC14.Frailty.Gam.t10 <-coxph(TC14.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                              +polity2 + area_1000 + lmtnest + ELF 
+                              +frailty.gamma(ccode),data=TC14) 
+
+TC14.Frailty.Gam.t20 <-coxph(TC14.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                              +polity2 + area_1000 + lmtnest + ELF 
+                              +frailty.gamma(ccode),data=TC14) 
+
+TC15.Frailty.Gam.t10 <-coxph(TC15.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                              +polity2 + area_1000 + lmtnest + ELF 
+                              +frailty.gamma(ccode),data=TC15) 
+
+TC15.Frailty.Gam.t20 <-coxph(TC15.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                              +polity2 + area_1000 + lmtnest + ELF 
+                              +frailty.gamma(ccode),data=TC15) 
+
+summary(TC1.Frailty.Gam)
+summary(TC2.Frailty.Gam.t10)
+summary(TC3.Frailty.Gam.t10)
+summary(TC4.Frailty.Gam.t10)
+summary(TC5.Frailty.Gam.t10)
+summary(TC6.Frailty.Gam.t10) 
+summary(TC7.Frailty.Gam.t10) 
+summary(TC8.Frailty.Gam.t10) 
+ 
+
+summary(TC2.Frailty.Gam.t20)
+summary(TC3.Frailty.Gam.t20)
+summary(TC4.Frailty.Gam.t20)
+summary(TC5.Frailty.Gam.t20)
+summary(TC6.Frailty.Gam.t20) 
+summary(TC7.Frailty.Gam.t20)
+summary(TC8.Frailty.Gam.t20)
+summary(TC9.Frailty.Gam.t20)
 
