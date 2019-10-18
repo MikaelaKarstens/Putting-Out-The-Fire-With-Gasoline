@@ -36,6 +36,8 @@ CrossTable(TCDat$new_TC_dummy, TCDat$Peace_wTC)
 
 CrossTable(TCDat$new_TC_dummy, TCDat$Fighting_wTC)
 
+CrossTable(TCDat$new_TC_dummy, TCDat$TempExisting)
+
 CrossTable(TCDat$new_TC_dummy, TCDat$polity2)
 
 plot(TCDat$new_TC_dummy, TCDat$area_1000) 
@@ -82,6 +84,9 @@ TC15 <- TCDat[TCDat$event_num==15,]
 
 
 # Creating all survival objects
+
+TCDat.Elapsed<-Surv(TCDat$alt_start,TCDat$alt_stop,TCDat$new_TC_dummy)
+TCDat.Gap<-Surv(TCDat$start,TCDat$stop,TCDat$new_TC_dummy)
 
 TC2On.Elapsed<-Surv(TC2On$alt_start,TC2On$alt_stop,TC2On$new_TC_dummy)
 TC2On.Gap<-Surv(TC2On$start,TC2On$stop,TC2On$new_TC_dummy)
@@ -133,10 +138,106 @@ TC15.Gap<-Surv(TC15$start,TC15$stop,TC15$new_TC_dummy)
 
 # Anderson-Gill Model - Variance Correction
 
-TC.AG.2On.1 <- coxph(TC2On.Gap ~ Peace_wTC + Fighting_wTC + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20 
-                 +cluster(ccode),data=TC2On, method="efron")
+TC.AG.2On.1 <- coxph(TC2On.Gap ~ TempExisting + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                     +polity2 + area_1000 + lmtnest + ELF   
+                    +cluster(ccode),data=TC2On, method="efron")
 summary(TC.AG.2On.1)
 
-TC.AG.2On.2 <- coxph(TC2On.Gap ~ Peace_wTC + Fighting_wTC + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20 
+TC.AG.2On.2 <- coxph(TC2On.Elapsed ~ TempExisting + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                     +polity2 + area_1000 + lmtnest + ELF   
                      +cluster(ccode),data=TC2On, method="efron")
 summary(TC.AG.2On.2)
+
+# Conditional PWP Model
+
+TC.PWP.1 <-coxph(TCDat.Gap ~ TempExisting + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                    +strata(event_num) + cluster(ccode),data=TCDat, method="efron")
+
+summary(TC.PWP.1)
+
+TC.PWP.2 <-coxph(TCDat.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                     +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                     +strata(event_num) + cluster(ccode),data=TCDat, method="efron")
+
+summary(TC.PWP.2)
+
+# Cox Gap Time with Gaussian Frailty
+
+TC.GausFrail<-coxph(TCDat.Gap ~ TempExisting + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+             +polity2 + area_1000 + lmtnest + ELF + Country_Age
+             +frailty.gaussian(ccode),data=TCDat)
+
+summary(TC.GausFrail) 
+
+# Cox Gap Time with Gamma Frailty
+
+TC.GammaFrail<-coxph(TCDat.Gap ~ TempExisting + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                    +frailty.gamma(ccode),data=TCDat)
+
+summary(TC.GammaFrail) 
+
+# Stratified models
+
+ TC1.Frailty <-coxph(TC1.Gap ~ TempExisting 
+                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                    +frailty.gaussian(ccode),data=TC1) 
+
+TC2.Frailty <-coxph(TC2.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                    +frailty.gaussian(ccode),data=TC2) 
+
+TC3.Frailty <-coxph(TC3.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                    +frailty.gaussian(ccode),data=TC3) 
+
+TC4.Frailty <-coxph(TC4.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                    +frailty.gaussian(ccode),data=TC4) 
+
+TC5.Frailty <-coxph(TC5.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                    +frailty.gaussian(ccode),data=TC5) 
+
+TC6.Frailty <-coxph(TC6.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                    +frailty.gaussian(ccode),data=TC6) 
+
+TC7.Frailty <-coxph(TC7.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                    +frailty.gaussian(ccode),data=TC7) 
+
+TC8.Frailty <-coxph(TC8.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                    +frailty.gaussian(ccode),data=TC8) 
+
+TC9.Frailty <-coxph(TC9.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                    +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                    +frailty.gaussian(ccode),data=TC9) 
+
+TC10.Frailty <-coxph(TC10.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                     +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                     +frailty.gaussian(ccode),data=TC10) 
+
+TC11.Frailty <-coxph(TC11.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                     +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                     +frailty.gaussian(ccode),data=TC11) 
+
+TC12.Frailty <-coxph(TC12.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                     +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                     +frailty.gaussian(ccode),data=TC12) 
+
+TC13.Frailty <-coxph(TC13.Gap ~ TC_persists_alt + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                     +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                     +frailty.gaussian(ccode),data=TC13) 
+
+TC14.Frailty <-coxph(TC14.Gap ~ TempExisting + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                     +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                     +frailty.gaussian(ccode),data=TC14) 
+
+TC15.Frailty <-coxph(TC15.Gap ~ TC_persists_alt + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+                     +polity2 + area_1000 + lmtnest + ELF + Country_Age
+                     +frailty.gaussian(ccode),data=TC15) 
+
+
