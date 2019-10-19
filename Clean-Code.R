@@ -20,6 +20,27 @@ options(scipen = 50) # no scientific notation
 TCDat <- read.csv("Survival-Data-TC.csv")
 names(TCDat)
 
+# Making Variables
+
+TCDat$temp <- TCDat$Forceful_t10 + TCDat$Absorbed_t10
+TCDat$BadEnd_t10 <- ifelse(TCDat$temp >= 1,1,0)
+
+TCDat$temp <- TCDat$Forceful_t20 + TCDat$Absorbed_t20
+TCDat$BadEnd_t20 <- ifelse(TCDat$temp >= 1,1,0)
+
+TCDat$temp <- TCDat$Forceful_end + TCDat$Absorbed_end
+TCDat$BadEnd_tever <- ifelse(TCDat$temp >= 1,1,0)
+
+
+TCDat$temp <- TCDat$Peaceful_t10 + TCDat$Promoted_t10
+TCDat$GoodEnd_t10 <- ifelse(TCDat$temp >= 1,1,0)
+
+TCDat$temp <- TCDat$Peaceful_t20 + TCDat$Promoted_t20
+TCDat$GoodEnd_t20 <- ifelse(TCDat$temp >= 1,1,0)
+
+TCDat$temp <- TCDat$Peaceful_end + TCDat$Promoted_end
+TCDat$GoodEnd_tever <- ifelse(TCDat$temp >= 1,1,0)
+
 
 # Summary Statistics & Crosstabs
 
@@ -53,35 +74,47 @@ plot(TCDat$new_TC_dummy, TCDat$Country_Age)
 
 TC2On <- TCDat[TCDat$event_num>=2,]
 
-TC1 <- TCDat[TCDat$event_num==1,]
+TC2or3 <- filter(TCDat, event_num == 2 | event_num == 3)
 
-TC2 <- TCDat[TCDat$event_num==2,]
+TC3or4 <- filter(TCDat, event_num == 3 | event_num == 4)
 
-TC3 <- TCDat[TCDat$event_num==3,]
+TC4or5 <- filter(TCDat, event_num == 4 | event_num == 5)
 
-TC4 <- TCDat[TCDat$event_num==4,]
+TC5or6 <- filter(TCDat, event_num == 5 | event_num == 6)
 
-TC5 <- TCDat[TCDat$event_num==5,]
+TC5orMore <- filter(TCDat, event_num >= 5)
 
-TC6 <- TCDat[TCDat$event_num==6,]
+TC6orMore <- filter(TCDat, event_num >= 6)
 
-TC7 <- TCDat[TCDat$event_num==7,]
+TC1 <- filter(TCDat, event_num == 1)
 
-TC8 <- TCDat[TCDat$event_num==8,]
+TC2 <- filter(TCDat, event_num == 2)
 
-TC9 <- TCDat[TCDat$event_num==9,]
+TC3 <- filter(TCDat, event_num == 3)
 
-TC10 <- TCDat[TCDat$event_num==10,]
+TC4 <- filter(TCDat, event_num == 4)
 
-TC11 <- TCDat[TCDat$event_num==11,]
+TC5 <- filter(TCDat, event_num == 5)
 
-TC12 <- TCDat[TCDat$event_num==12,]
+TC6 <- filter(TCDat, event_num == 6)
 
-TC13 <- TCDat[TCDat$event_num==13,]
+TC7 <- filter(TCDat, event_num == 7)
 
-TC14 <- TCDat[TCDat$event_num==14,]
+TC8 <- filter(TCDat, event_num == 8)
 
-TC15 <- TCDat[TCDat$event_num==15,]
+TC9 <- filter(TCDat, event_num == 9)
+
+TC10 <- filter(TCDat, event_num == 10)
+
+TC11 <- filter(TCDat, event_num == 11)
+
+TC12 <- filter(TCDat, event_num == 12)
+
+TC13 <- filter(TCDat, event_num == 13)
+
+TC14 <- filter(TCDat, event_num == 14)
+
+TC15 <- filter(TCDat, event_num == 15)
 
 
 # Creating all survival objects
@@ -98,8 +131,14 @@ TC1.Gap<-Surv(TC1$start,TC1$stop,TC1$new_TC_dummy)
 TC2.Elapsed<-Surv(TC2$alt_start,TC2$alt_stop,TC2$new_TC_dummy)
 TC2.Gap<-Surv(TC2$start,TC2$stop,TC2$new_TC_dummy)
 
+TC2or3.Elapsed<-Surv(TC2or3$alt_start,TC2or3$alt_stop,TC2or3$new_TC_dummy)
+TC2or3.Gap<-Surv(TC2or3$start,TC2or3$stop,TC2or3$new_TC_dummy)
+
 TC3.Elapsed<-Surv(TC3$alt_start,TC3$alt_stop,TC3$new_TC_dummy)
 TC3.Gap<-Surv(TC3$start,TC3$stop,TC3$new_TC_dummy)
+
+TC3or4.Elapsed<-Surv(TC3or4$alt_start,TC3or4$alt_stop,TC3or4$new_TC_dummy)
+TC3or4.Gap<-Surv(TC3or4$start,TC3or4$stop,TC3or4$new_TC_dummy)
 
 TC4.Elapsed<-Surv(TC4$alt_start,TC4$alt_stop,TC4$new_TC_dummy)
 TC4.Gap<-Surv(TC4$start,TC4$stop,TC4$new_TC_dummy)
@@ -139,7 +178,7 @@ TC15.Gap<-Surv(TC15$start,TC15$stop,TC15$new_TC_dummy)
 
 # Anderson-Gill Model - Variance Correction
 
-TC.AG.2On.1 <- coxph(TC2On.Gap ~ Peace_wTC + Fighting_wTC + Absorbed_ExpDecay_10 + Forceful_ExpDecay_10 + Peaceful_ExpDecay_10 + Promoted_ExpDecay_10
+TC.AG.2On.1 <- coxph(TC2On.Gap ~ Peace_wTC + Fighting_wTC + GoodEnd_t10 + BadEnd_t10
                      +polity2 + area_1000 + lmtnest + ELF   
                     +cluster(ccode),data=TC2On, method="efron")
 summary(TC.AG.2On.1)
@@ -151,13 +190,13 @@ summary(TC.AG.2On.2)
 
 # Conditional PWP Model
 
-TC.PWP.1 <-coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+TC.PWP.1 <-coxph(TCDat.Gap ~ Peace_wTC + GoodEnd_t10 + BadEnd_t10
                     +polity2 + area_1000 + lmtnest + ELF
                     +strata(event_num) + cluster(ccode),data=TCDat, method="efron")
 
 summary(TC.PWP.1)
 
-TC.PWP.2 <-coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+TC.PWP.2 <-coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC + GoodEnd_t20 + BadEnd_t20
                      +polity2 + area_1000 + lmtnest + ELF + Country_Age
                      +strata(event_num) + cluster(ccode),data=TCDat, method="efron")
 
@@ -165,7 +204,7 @@ summary(TC.PWP.2)
 
 # Cox Gap Time with Gaussian Frailty
 
-TC.GausFrail<-coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+TC.GausFrail<-coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC + GoodEnd_t20 + BadEnd_t20
              +polity2 + area_1000 + lmtnest + ELF + Country_Age
              +frailty.gaussian(ccode),data=TCDat)
 
@@ -186,11 +225,11 @@ TC1.Frailty.Gaus <-coxph(TC1.Gap ~ polity2 + area_1000 + lmtnest + ELF
 
 ###########################################################
 
-TC2.Frailty.Gaus.t10 <-coxph(TC2.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+TC2.Frailty.Gaus.t10 <-coxph(TC2.Gap ~ Peace_wTC + Fighting_wTC   + GoodEnd_t10 + BadEnd_t10
                     +polity2 + area_1000 + lmtnest + ELF 
                     +frailty.gaussian(ccode),data=TC2) 
 
-TC2.Frailty.Gaus.t20 <-coxph(TC2.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+TC2.Frailty.Gaus.t20 <-coxph(TC2.Gap ~ Peace_wTC + Fighting_wTC  + GoodEnd_t20 + BadEnd_t20
                              +polity2 + area_1000 + lmtnest + ELF 
                              +frailty.gaussian(ccode),data=TC2) 
 
@@ -220,11 +259,45 @@ TC2.Frailty.Gaus.ExpDecay20 <-coxph(TC2.Gap ~ Peace_wTC + Fighting_wTC  + Absorb
 
 ##############################################
 
-TC3.Frailty.Gaus.t10 <-coxph(TC3.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+TC2or3.Frailty.Gaus.t10 <-coxph(TC2or3.Gap ~ Peace_wTC + Fighting_wTC   + GoodEnd_t10 + BadEnd_t10
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gaussian(ccode),data=TC2or3) 
+
+TC2or3.Frailty.Gaus.t20 <-coxph(TC2or3.Gap ~ Peace_wTC + Fighting_wTC  + GoodEnd_t20 + BadEnd_t20
+                             +polity2 + area_1000 + lmtnest + ELF 
+                             +frailty.gaussian(ccode),data=TC2or3) 
+
+TC2or3.Frailty.Gaus.tever <-coxph(TC2or3.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_end + Forceful_end + Peaceful_end + Promoted_end
+                               +polity2 + area_1000 + lmtnest + ELF 
+                               +frailty.gaussian(ccode),data=TC2or3) 
+
+TC2or3.Frailty.Gaus.LinDecay <-coxph(TC2or3.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_LinDecay + Forceful_LinDecay + Peaceful_LinDecay + Promoted_LinDecay
+                                  +polity2 + area_1000 + lmtnest + ELF 
+                                  +frailty.gaussian(ccode),data=TC2or3) 
+
+TC2or3.Frailty.Gaus.ExpDecay5 <-coxph(TC2or3.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_5 + Forceful_ExpDecay_5 + Peaceful_ExpDecay_5 + Promoted_ExpDecay_5
+                                   +polity2 + area_1000 + lmtnest + ELF 
+                                   +frailty.gaussian(ccode),data=TC2or3) 
+
+TC2or3.Frailty.Gaus.ExpDecay10 <-coxph(TC2or3.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_10 + Forceful_ExpDecay_10 + Peaceful_ExpDecay_10 + Promoted_ExpDecay_10
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC2or3) 
+
+TC2or3.Frailty.Gaus.ExpDecay15 <-coxph(TC2or3.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_15 + Forceful_ExpDecay_15 + Peaceful_ExpDecay_15 + Promoted_ExpDecay_15
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC2or3) 
+
+TC2or3.Frailty.Gaus.ExpDecay20 <-coxph(TC2or3.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_ExpDecay_20 + Forceful_ExpDecay_20 + Peaceful_ExpDecay_20 + Promoted_ExpDecay_20
+                                    +polity2 + area_1000 + lmtnest + ELF 
+                                    +frailty.gaussian(ccode),data=TC2or3) 
+
+##############################################
+
+TC3.Frailty.Gaus.t10 <-coxph(TC3.Gap ~ Peace_wTC + Fighting_wTC   + GoodEnd_t10 + BadEnd_t10
                     +polity2 + area_1000 + lmtnest + ELF 
                     +frailty.gaussian(ccode),data=TC3) 
 
-TC3.Frailty.Gaus.t20 <-coxph(TC3.Gap ~ Peace_wTC + Fighting_wTC  + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+TC3.Frailty.Gaus.t20 <-coxph(TC3.Gap ~ Peace_wTC + Fighting_wTC  + GoodEnd_t20 + BadEnd_t20
                              +polity2 + area_1000 + lmtnest + ELF 
                              +frailty.gaussian(ccode),data=TC3) 
 
@@ -254,11 +327,11 @@ TC3.Frailty.Gaus.ExpDecay20 <-coxph(TC3.Gap ~ Peace_wTC + Fighting_wTC  + Absorb
 
 ##############################################
 
-TC4.Frailty.Gaus.t10 <-coxph(TC4.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+TC4.Frailty.Gaus.t10 <-coxph(TC4.Gap ~ Peace_wTC + Fighting_wTC   + GoodEnd_t10 + BadEnd_t10
                     +polity2 + area_1000 + lmtnest + ELF 
                     +frailty.gaussian(ccode),data=TC4) 
 
-TC4.Frailty.Gaus.t20 <-coxph(TC4.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+TC4.Frailty.Gaus.t20 <-coxph(TC4.Gap ~ Peace_wTC + Fighting_wTC   + GoodEnd_t20 + BadEnd_t20
                              +polity2 + area_1000 + lmtnest + ELF 
                              +frailty.gaussian(ccode),data=TC4)
 
@@ -288,11 +361,11 @@ TC4.Frailty.Gaus.ExpDecay20 <-coxph(TC4.Gap ~ Peace_wTC + Fighting_wTC  + Absorb
 
 ##############################################
 
-TC5.Frailty.Gaus.t10 <-coxph(TC5.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+TC5.Frailty.Gaus.t10 <-coxph(TC5.Gap ~ Peace_wTC + Fighting_wTC   + GoodEnd_t10 + BadEnd_t10
                     +polity2 + area_1000 + lmtnest + ELF 
                     +frailty.gaussian(ccode),data=TC5) 
 
-TC5.Frailty.Gaus.t20 <-coxph(TC5.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+TC5.Frailty.Gaus.t20 <-coxph(TC5.Gap ~ Peace_wTC + Fighting_wTC   + GoodEnd_t20 + BadEnd_t20
                              +polity2 + area_1000 + lmtnest + ELF 
                              +frailty.gaussian(ccode),data=TC5) 
 
@@ -322,11 +395,11 @@ TC5.Frailty.Gaus.ExpDecay20 <-coxph(TC5.Gap ~ Peace_wTC + Fighting_wTC  + Absorb
 
 ##############################################
 
-TC6.Frailty.Gaus.t10 <-coxph(TC6.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+TC6.Frailty.Gaus.t10 <-coxph(TC6.Gap ~ Peace_wTC + Fighting_wTC   + GoodEnd_t10 + BadEnd_t10
                     +polity2 + area_1000 + lmtnest + ELF 
                     +frailty.gaussian(ccode),data=TC6) 
 
-TC6.Frailty.Gaus.t20 <-coxph(TC6.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+TC6.Frailty.Gaus.t20 <-coxph(TC6.Gap ~ Peace_wTC + Fighting_wTC   + GoodEnd_t20 + BadEnd_t20
                              +polity2 + area_1000 + lmtnest + ELF 
                              +frailty.gaussian(ccode),data=TC6) 
 
@@ -356,11 +429,11 @@ TC6.Frailty.Gaus.ExpDecay20 <-coxph(TC6.Gap ~ Peace_wTC + Fighting_wTC  + Absorb
 
 ##############################################
 
-TC7.Frailty.Gaus.t10 <-coxph(TC7.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t10 + Forceful_t10 + Peaceful_t10 + Promoted_t10
+TC7.Frailty.Gaus.t10 <-coxph(TC7.Gap ~ Peace_wTC + Fighting_wTC   + GoodEnd_t10 + BadEnd_t10
                     +polity2 + area_1000 + lmtnest + ELF 
                     +frailty.gaussian(ccode),data=TC7) 
 
-TC7.Frailty.Gaus.t20 <-coxph(TC7.Gap ~ Peace_wTC + Fighting_wTC   + Absorbed_t20 + Forceful_t20 + Peaceful_t20 + Promoted_t20
+TC7.Frailty.Gaus.t20 <-coxph(TC7.Gap ~ Peace_wTC + Fighting_wTC   + GoodEnd_t20 + BadEnd_t20
                              +polity2 + area_1000 + lmtnest + ELF 
                              +frailty.gaussian(ccode),data=TC7)
 
@@ -736,4 +809,6 @@ summary(TC6.Frailty.Gam.t20)
 summary(TC7.Frailty.Gam.t20)
 summary(TC8.Frailty.Gam.t20)
 summary(TC9.Frailty.Gam.t20)
+
+##### Plots ###########################
 
