@@ -22,25 +22,29 @@ names(TCDat)
 
 # Making Variables
 
-TCDat$temp <- TCDat$Forceful_t10 + TCDat$Absorbed_t10
-TCDat$BadEnd_t10 <- ifelse(TCDat$temp >= 1,1,0)
+#TCDat$BadEnd <- ifelse(TCDat$Forceful == 1 | TCDat$Absorbed == 1, 1, 0)
 
-TCDat$temp <- TCDat$Forceful_t20 + TCDat$Absorbed_t20
-TCDat$BadEnd_t20 <- ifelse(TCDat$temp >= 1,1,0)
+#TCDat$GoodEnd <- ifelse(TCDat$Peaceful == 1 | TCDat$Promoted == 1, 1, 0)
 
-TCDat$temp <- TCDat$Forceful_end + TCDat$Absorbed_end
-TCDat$BadEnd_tever <- ifelse(TCDat$temp >= 1,1,0)
+#TCDat$temp <- TCDat$Forceful_t10 + TCDat$Absorbed_t10
+#TCDat$BadEnd_t10 <- ifelse(TCDat$temp >= 1,1,0)
 
+#TCDat$temp <- TCDat$Forceful_t20 + TCDat$Absorbed_t20
+#TCDat$BadEnd_t20 <- ifelse(TCDat$temp >= 1,1,0)
 
-TCDat$temp <- TCDat$Peaceful_t10 + TCDat$Promoted_t10
-TCDat$GoodEnd_t10 <- ifelse(TCDat$temp >= 1,1,0)
+#TCDat$temp <- TCDat$Forceful_end + TCDat$Absorbed_end
+#TCDat$BadEnd_tever <- ifelse(TCDat$temp >= 1,1,0)
 
-TCDat$temp <- TCDat$Peaceful_t20 + TCDat$Promoted_t20
-TCDat$GoodEnd_t20 <- ifelse(TCDat$temp >= 1,1,0)
+#TCDat$temp <- TCDat$Peaceful_t10 + TCDat$Promoted_t10
+#TCDat$GoodEnd_t10 <- ifelse(TCDat$temp >= 1,1,0)
 
-TCDat$temp <- TCDat$Peaceful_end + TCDat$Promoted_end
-TCDat$GoodEnd_tever <- ifelse(TCDat$temp >= 1,1,0)
+#TCDat$temp <- TCDat$Peaceful_t20 + TCDat$Promoted_t20
+#TCDat$GoodEnd_t20 <- ifelse(TCDat$temp >= 1,1,0)
 
+#TCDat$temp <- TCDat$Peaceful_end + TCDat$Promoted_end
+#TCDat$GoodEnd_tever <- ifelse(TCDat$temp >= 1,1,0)
+
+write.csv(TCDat, "Survival-Data-TC.csv")
 
 # Summary Statistics & Crosstabs
 
