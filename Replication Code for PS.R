@@ -191,6 +191,7 @@ combined <- data.frame(Variable = coefs1$Variable,
                    HazardRatio = coefs1$HazardRatio,
                    SE = summary(TCAll.PWP.LinDecay)$coef[,3],
                    TC = "Combined")
+combined$Variable <- factor(combined$Variable, levels=unique(as.character(combined$Variable)) )
 
 first <- data.frame(Variable = coefs2$Variable,
                        HazardRatio = coefs2$HazardRatio,
@@ -215,6 +216,8 @@ mod4 <- data.frame(Variable = coefs5$Variable,
 
 
 allmod <- data.frame(rbind(mod4, mod3, mod2, first))
+allmod$Variable <- factor(allmod$Variable, levels=unique(as.character(allmod$Variable)) )
+
 
 interval1 <- -qnorm((1-0.9)/2)  # 90% multiplier
 interval2 <- -qnorm((1-0.95)/2)  # 95% multiplier
@@ -228,7 +231,7 @@ zp2 <- zp2 + geom_pointrange(aes(x = Variable, y = HazardRatio, ymin = HazardRat
                                  ymax = HazardRatio + SE*interval2),
                              lwd = 1/2, position = position_dodge(width = 1/2),
                              shape = 21, fill = "WHITE")
-zp2 <- zp2 + coord_flip() + theme_bw()
+zp2 <- zp2 + xlim(rev(levels(combined$Variable))) + coord_flip() + theme_bw()
 #zp1 <- zp1 + ggtitle("Comparing several models")
 print(zp2)  # The trick to these is position_dodge().
 
@@ -241,6 +244,6 @@ zp1 <- zp1 + geom_pointrange(aes(x = Variable, y = HazardRatio, ymin = HazardRat
                                  ymax = HazardRatio + SE*interval2),
                              lwd = 1/2, position = position_dodge(width = 1/2),
                              shape = 21, fill = "WHITE")
-zp1 <- zp1 + coord_flip() + theme_bw()
+zp1 <- zp1 + xlim(rev(levels(allmod$Variable))) + coord_flip() + theme_bw()
 #zp1 <- zp1 + ggtitle("Comparing several models")
 print(zp1)  # The trick to these is position_dodge().
