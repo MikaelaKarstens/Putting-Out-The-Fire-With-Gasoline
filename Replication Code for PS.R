@@ -132,22 +132,22 @@ TC10.Gap<-Surv(TC10$start,TC10$stop,TC10$new_TC_dummy)
 
 TCDat$PrevTC <- TCDat$event_num - 1
 
-TCAll.PWP.LinDecay <-coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC  + GoodEnd_LinDecay + BadEnd_LinDecay
+TCAll.PWP.LinDecay <-coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC  + GoodEnd_LinDecay + BadEnd_LinDecay + BirthType
                            +polity2 + area_1000 + lmtnest + ELF 
                            +strata(event_num) + cluster(ccode),data=TCDat, method="efron")
 
-TC.1.PWP <- coxph(TC1.Gap ~ +polity2 + area_1000 + lmtnest + ELF 
+TC.1.PWP <- coxph(TC1.Gap ~ +polity2 + area_1000 + lmtnest + ELF + BirthType
                   +strata(event_num) + cluster(ccode),data=TC1, method="efron")
 
-TC2or3.PWP.LinDecay <-coxph(TC2or3.Gap ~ Peace_wTC + Fighting_wTC  + GoodEnd_LinDecay + BadEnd_LinDecay
+TC2or3.PWP.LinDecay <-coxph(TC2or3.Gap ~ Peace_wTC + Fighting_wTC  + GoodEnd_LinDecay + BadEnd_LinDecay + BirthType
                             +polity2 + area_1000 + lmtnest + ELF 
                             +strata(event_num) + cluster(ccode),data=TC2or3, method="efron") 
 
-TC4or5.PWP.LinDecay <-coxph(TC4or5.Gap ~ Peace_wTC + Fighting_wTC  + GoodEnd_LinDecay + BadEnd_LinDecay
+TC4or5.PWP.LinDecay <-coxph(TC4or5.Gap ~ Peace_wTC + Fighting_wTC  + GoodEnd_LinDecay + BadEnd_LinDecay + BirthType
                             +polity2 + area_1000 + lmtnest + ELF 
                             +strata(event_num) + cluster(ccode),data=TC4or5, method="efron") 
 
-TC6orMore.PWP.LinDecay <-coxph(TC6orMore.Gap ~ Peace_wTC + Fighting_wTC  + GoodEnd_LinDecay + BadEnd_LinDecay
+TC6orMore.PWP.LinDecay <-coxph(TC6orMore.Gap ~ Peace_wTC + Fighting_wTC  + GoodEnd_LinDecay + BadEnd_LinDecay + BirthType
                                +polity2 + area_1000 + lmtnest + ELF 
                                +strata(event_num) + cluster(ccode),data=TC6orMore, method="efron") 
 
@@ -155,37 +155,62 @@ stargazer(TCAll.PWP.LinDecay)
 
 ##################################
 
-model1 <- data.frame(Variable = rownames(TCAll.PWP.LinDecay$coefficients),
-                     Coefficient = TCAll.PWP.LinDecay$coefficients,
-                     SE = TCAll.PWP.LinDecay$)
+####### Linear Decay PWP Models Disag #####
+
+TCDat$PrevTC <- TCDat$event_num - 1
+
+TCAll.PWP.LinDecay <-coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC  + GoodEnd_LinDecay + Forceful_LinDecay + Absorbed_LinDecay + BirthType
+                           +polity2 + area_1000 + lmtnest + ELF 
+                           +strata(event_num) + cluster(ccode),data=TCDat, method="efron")
+
+TC.1.PWP <- coxph(TC1.Gap ~ +polity2 + area_1000 + lmtnest + ELF + BirthType
+                  +strata(event_num) + cluster(ccode),data=TC1, method="efron")
+
+TC2or3.PWP.LinDecay <-coxph(TC2or3.Gap ~ Peace_wTC + Fighting_wTC  + GoodEnd_LinDecay + Forceful_LinDecay + Absorbed_LinDecay  + BirthType
+                            +polity2 + area_1000 + lmtnest + ELF 
+                            +strata(event_num) + cluster(ccode),data=TC2or3, method="efron") 
+
+TC4or5.PWP.LinDecay <-coxph(TC4or5.Gap ~ Peace_wTC + Fighting_wTC  + GoodEnd_LinDecay + Forceful_LinDecay + Absorbed_LinDecay  + BirthType
+                            +polity2 + area_1000 + lmtnest + ELF 
+                            +strata(event_num) + cluster(ccode),data=TC4or5, method="efron") 
+
+TC6orMore.PWP.LinDecay <-coxph(TC6orMore.Gap ~ Peace_wTC + Fighting_wTC  + GoodEnd_LinDecay + Forceful_LinDecay + Absorbed_LinDecay  + BirthType
+                               +polity2 + area_1000 + lmtnest + ELF 
+                               +strata(event_num) + cluster(ccode),data=TC6orMore, method="efron") 
+
+stargazer(TCAll.PWP.LinDecay, TC.1.PWP, TC2or3.PWP.LinDecay, TC4or5.PWP.LinDecay, TC6orMore.PWP.LinDecay)
+
+##################################
+
 
 coefs1 <- tidy(TCAll.PWP.LinDecay, conf.int = TRUE, exponentiate = T)
 coefs1$HazardRatio <- coefs1$estimate
-coefs1$Variable <- c("Peace", "Fighting", "Favorable for TC", "Favorable for SS", "Polity", "Area", "Terrain", "ELF")
+coefs1$Variable <- c("Peace", "Fighting", "Favorable for TC", "Favorable for SS", "Birth Type", "Polity", "Area", "Mountains", "ELF")
 
 coefs2 <- tidy(TC.1.PWP, conf.int = TRUE, exponentiate = T)
 coefs2$HazardRatio <- coefs2$estimate
-coefs2$Variable <- c( "Polity", "Area", "Terrain", "ELF")
+coefs2$Variable <- c( "Birth Type", "Polity", "Area", "Mountains", "ELF")
 
 coefs3 <- tidy(TC2or3.PWP.LinDecay, conf.int = TRUE, exponentiate = T)
 coefs3$HazardRatio <- coefs3$estimate
-coefs3$Variable <- c("Peace", "Fighting", "Favorable for TC", "Favorable for SS", "Polity", "Area", "Terrain", "ELF")
+coefs3$Variable <- c("Peace", "Fighting", "Favorable for TC", "Favorable for SS", "Birth Type", "Polity", "Area", "Mountains", "ELF")
 
 coefs4 <- tidy(TC4or5.PWP.LinDecay, conf.int = TRUE, exponentiate = T)
 coefs4$HazardRatio <- coefs4$estimate
-coefs4$Variable <- c("Peace", "Fighting", "Favorable for TC", "Favorable for SS", "Polity", "Area", "Terrain", "ELF")
+coefs4$Variable <- c("Peace", "Fighting", "Favorable for TC", "Favorable for SS","Birth Type", "Polity", "Area", "Mountains", "ELF")
 
 coefs5 <- tidy(TC6orMore.PWP.LinDecay, conf.int = TRUE, exponentiate = T)
 coefs5$HazardRatio <- coefs5$estimate
-coefs5$Variable <- c("Peace", "Fighting", "Favorable for TC", "Favorable for SS", "Polity", "Area", "Terrain", "ELF")
+coefs5$Variable <- c("Peace", "Fighting", "Favorable for TC", "Favorable for SS","Birth Type", "Polity", "Area", "Mountains", "ELF")
 
 
 coefs$HazardRatio <- coefs$estimate
-ggcoef(coefs, mapping = aes_string(y = "Variable", x = "HazardRatio"), color = "orange", vline_intercept = 1)
 
 dat <- filter(TCDat, last_year == 1)
 table(dat$TC_tally)
 hist(dat$TC_tally)
+d <- data.frame(dat$statename, dat$TC_tally)
+write.csv(d, "tally.csv")
 
 combined <- data.frame(Variable = coefs1$Variable,
                    HazardRatio = coefs1$HazardRatio,

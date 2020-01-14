@@ -1321,25 +1321,45 @@ summary(TC9.Frailty.Gam.t20)
 
 ############################ Tables for 10-23 ######
 
-stargazer(TC.1.PWP, TC2or3.PWP.ExpDecay15, TC4or5.PWP.ExpDecay15, TC6orMore.PWP.ExpDecay15,
-          title = "Conditional Gap Time Models with Exponential Decay 15",
-          covariate.labels = c("Peace w/ TC", "Fighting w/ TC", "Good End",
-                               "Bad End", "Polity", "Area", "Mountains", "ELF"),
-          dep.var.caption = "New TC Emergence",
-          dep.var.labels.include = FALSE,
-          column.labels = c("First TC", "TC 2-3", "TC 4-5", "TC 6+"), 
-          df = FALSE
-          )
-
-stargazer(TC.1.PWP, TC2or3.PWP.LinDecay, TC4or5.PWP.LinDecay, TC6orMore.PWP.LinDecay,
+stargazer(TCAll.PWP.LinDecay, TC.1.PWP, TC2or3.PWP.LinDecay, TC4or5.PWP.LinDecay, TC6orMore.PWP.LinDecay,
           title = "Conditional Gap Time Models with Linear Decay (20 Years)",
           covariate.labels = c("Peace w/ TC", "Fighting w/ TC", "Good End",
                                "Bad End", "Polity", "Area", "Mountains", "ELF"),
           dep.var.caption = "New TC Emergence",
           dep.var.labels.include = FALSE,
-          column.labels = c("First TC", "TC 2-3", "TC 4-5", "TC 6+"), 
+          column.labels = c("All Years","First TC", "TC 2-3", "TC 4-5", "TC 6+"), 
           df = FALSE)
 
+
+stargazer(TCAll.PWP.LinDecay.disag, TC.1.PWP, TC2or3.PWP.LinDecay.disag, TC4or5.PWP.LinDecay.disag, TC6orMore.PWP.LinDecay.disag,
+          title = "Conditional Gap Time Models with Linear Decay (20 Years) - Disaggregated",
+          covariate.labels = c("Peace w/ TC", "Fighting w/ TC", "Absorbed" , "Forceful", "Peaceful",
+                               "Promoted", "Polity", "Area", "Mountains", "ELF"),
+          dep.var.caption = "New TC Emergence",
+          dep.var.labels.include = FALSE,
+          column.labels = c("All Years","First TC", "TC 2-3", "TC 4-5", "TC 6+"), 
+          df = FALSE)
+
+
+stargazer(TCAll.PWP.ExpDecay15, TC.1.PWP, TC2or3.PWP.ExpDecay15, TC4or5.PWP.ExpDecay15, TC6orMore.PWP.ExpDecay15,
+          title = "Conditional Gap Time Models with Exponential Decay 15",
+          covariate.labels = c("Peace w/ TC", "Fighting w/ TC", "Good End",
+                               "Bad End", "Polity", "Area", "Mountains", "ELF"),
+          dep.var.caption = "New TC Emergence",
+          dep.var.labels.include = FALSE,
+          column.labels = c("All Years","First TC", "TC 2-3", "TC 4-5", "TC 6+"), 
+          df = FALSE
+          )
+
+stargazer(TCAll.PWP.ExpDecay15.disag, TC.1.PWP, TC2or3.PWP.ExpDecay15.disag, TC4or5.PWP.ExpDecay15.disag, TC6orMore.PWP.ExpDecay15.disag,
+          title = "Conditional Gap Time Models with Exponential Decay 15 - Disaggregated",
+          covariate.labels = c("Peace w/ TC", "Fighting w/ TC", "Absorbed" , "Forceful", "Peaceful",
+                               "Promoted", "Polity", "Area", "Mountains", "ELF"),
+          dep.var.caption = "New TC Emergence",
+          dep.var.labels.include = FALSE,
+          column.labels = c("All Years","First TC", "TC 2-3", "TC 4-5", "TC 6+"), 
+          df = FALSE
+)
 
 
 
