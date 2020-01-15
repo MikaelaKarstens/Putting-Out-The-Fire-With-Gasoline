@@ -1,5 +1,5 @@
 # Replication code for "Assessing State Making Strategies" by Douglas Lemke and Mikaela Karstens
-
+#TEST
 # Required packages for replication - Please install if needed (FIX THESE TO REMOVE UNUSED)
 
 library(survival)
@@ -122,7 +122,7 @@ stargazer(TCAll.PWP, TC.1.PWP, TC2or3.PWP.LinDecay, TC4or5.PWP.LinDecay, TC6orMo
 
 # Additional models
 
-# by other TC as a control
+# Absorbed by other TC as a control
 
 TCAll.AbsorbedControl <-coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC  + Forceful_LinDecay + GoodEnd_LinDecay + Absorbed_LinDecay
                   +polity2 + area_1000_log + lmtnest + ELF 
