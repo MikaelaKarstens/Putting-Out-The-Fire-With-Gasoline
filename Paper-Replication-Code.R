@@ -8,13 +8,20 @@ library(dplyr)
 library(ggplot2)
 library(pscl)
 library(censReg)
+library(survminer)
+library("xfun")
+library(ggthemes)
+library(extrafont)
+font_import()
+loadfonts(device = "win")
+library(grid)
+
 
 library(sampleSelection) # Package containing heckit for heckprob substitute
 library(lubridate) #Used for survival data formatting
 library(reReg) #recurrent events package
 library(gmodels)
 library(Hmisc)
-library(survminer)
 library(visreg)
 library(coefplot)
 library(broom)
@@ -110,6 +117,122 @@ TC6orMore.PWP.LinDecay <-coxph(TC6orMore.Gap ~ Peace_wTC + Fighting_wTC  + Force
                                +strata(event_num) + cluster(ccode),data=TC6orMore, method="efron") 
 
 summary(TCAll.PWP)
+
+################ Experimenting. 
+
+IndoDRC <-  TCDat %>% filter(statename %in% c("Indonesia", "ZaireDRC"))
+Forceful <- filter(IndoDRC, Forceful == 1)
+Peaceful <- filter(IndoDRC, Peaceful == 1 | Promoted == 1)
+
+Indo <-  TCDat %>% filter(statename %in% c("Indonesia"))
+ForcefulI <- filter(Indo, Forceful == 1)
+PeacefulI <- filter(Indo, Peaceful == 1 | Promoted == 1)
+
+DRC <-  TCDat %>% filter(statename %in% c("ZaireDRC"))
+ForcefulD <- filter(DRC, Forceful == 1)
+PeacefulD <- filter(DRC, Peaceful == 1 | Promoted == 1)
+
+IndoDRCPlot1 <- ggplot() +
+  geom_line(aes(y = TC_tally, x = year, colour = statename), size = 1, data = IndoDRC, stat="identity") +
+  geom_point(aes(y = TC_tally, x = year, colour = statename), shape = 21, fill = "red", size = 2, data = Forceful, stat="identity") +
+  geom_point(aes(y = TC_tally, x = year, colour = statename), shape = 21, size = 2,fill = "blue", data = Peaceful, stat="identity") +
+              scale_x_continuous(breaks=seq(1945,2010,5))+
+              ggtitle("Comparison of TCs Experienced by Indonesia and DRC") + labs(x="Year", y="Total Number of TCs")+
+              theme(legend.position="bottom", legend.direction="horizontal", legend.title = element_blank())+
+              theme(axis.line = element_line(size=1, colour = "black"),
+                    panel.grid.major = element_line(colour = "#d3d3d3"), panel.grid.minor = element_blank(),
+                    panel.border = element_blank(), panel.background = element_blank()) +
+              theme(plot.title = element_text(size = 14, family = "Tahoma", face = "bold"),
+                    text=element_text(family="Tahoma"),
+                    axis.text.x=element_text(colour="black", size = 10),
+                    axis.text.y=element_text(colour="black", size = 10),
+                    legend.key=element_rect(fill="white", colour="white"))
+              
+IndoDRCPlot1
+
+IndoDRCPlot2 <- ggplot() +
+  geom_line(aes(y = num_TC, x = year, colour = statename), size = 1, data = IndoDRC, stat="identity") +
+  geom_point(aes(y = num_TC, x = year, colour = statename), shape = 21, fill = "red", size = 2, data = Forceful, stat="identity") +
+  geom_point(aes(y = num_TC, x = year, colour = statename), shape = 21, size = 2,fill = "blue", data = Peaceful, stat="identity") +
+  scale_x_continuous(breaks=seq(1945,2010,5))+
+  scale_y_continuous(breaks=seq(0,7,1))+
+  ggtitle("Comparison of TCs Experienced by Indonesia and DRC") + labs(x="Year", y="Number of Active TCs")+
+  theme(legend.position="bottom", legend.direction="horizontal", legend.title = element_blank())+
+  theme(axis.line = element_line(size=1, colour = "black"),
+        panel.grid.major = element_line(colour = "#d3d3d3"), panel.grid.minor = element_blank(),
+        panel.border = element_blank(), panel.background = element_blank()) +
+  theme(plot.title = element_text(size = 14, family = "Tahoma", face = "bold"),
+        text=element_text(family="Tahoma"),
+        axis.text.x=element_text(colour="black", size = 10),
+        axis.text.y=element_text(colour="black", size = 10),
+        legend.key=element_rect(fill="white", colour="white"))
+
+IndoDRCPlot2 
+
+
+IndoPlot <- ggplot() +
+  geom_line(aes(y = num_TC, x = year, colour = statename), size = 1, data = Indo, stat="identity") +
+  geom_point(aes(y = num_TC, x = year, colour = statename), shape = 21, fill = "red", size = 2, data = ForcefulI, stat="identity") +
+  geom_point(aes(y = num_TC, x = year, colour = statename), shape = 21, size = 2,fill = "blue", data = PeacefulI, stat="identity") +
+  scale_x_continuous(breaks=seq(1945,2010,5))+
+  scale_y_continuous(breaks=seq(0,7,1))+
+  ggtitle("Comparison of TCs Experienced by Indonesia") + labs(x="Year", y="Number of Active TCs")+
+  theme(legend.position="bottom", legend.direction="horizontal", legend.title = element_blank())+
+  theme(axis.line = element_line(size=1, colour = "black"),
+        panel.grid.major = element_line(colour = "#d3d3d3"), panel.grid.minor = element_blank(),
+        panel.border = element_blank(), panel.background = element_blank()) +
+  theme(plot.title = element_text(size = 14, family = "Tahoma", face = "bold"),
+        text=element_text(family="Tahoma"),
+        axis.text.x=element_text(colour="black", size = 10),
+        axis.text.y=element_text(colour="black", size = 10),
+        legend.key=element_rect(fill="white", colour="white"))
+
+IndoPlot
+
+DRCPlot <- ggplot() +
+  geom_line(aes(y = num_TC, x = year), size = 1, data = DRC, stat="identity") +
+  geom_point(aes(y = num_TC, x = year), shape = 21, fill = "red", size = 2, data = ForcefulD, stat="identity") +
+  geom_point(aes(y = num_TC, x = year), shape = 21, size = 2,fill = "blue", data = PeacefulD, stat="identity") +
+  scale_y_continuous(limits = c(0,7), breaks=seq(0,7,1))+
+  scale_x_continuous(limits = c(1945,2010), breaks=seq(1945,2010,5))+
+  ggtitle("Comparison of TCs Experienced by DRC") + labs(x="Year", y="Number of Active TCs")+
+  theme(legend.position="bottom", legend.direction="horizontal", legend.title = element_blank())+
+  theme(axis.line = element_line(size=1, colour = "black"),
+        panel.grid.major = element_line(colour = "#d3d3d3"), panel.grid.minor = element_blank(),
+        panel.border = element_blank(), panel.background = element_blank()) +
+  theme(plot.title = element_text(size = 14, family = "Tahoma", face = "bold"),
+        text=element_text(family="Tahoma"),
+        axis.text.x=element_text(colour="black", size = 10),
+        axis.text.y=element_text(colour="black", size = 10),
+        legend.key=element_rect(fill="white", colour="white"))
+
+DRCPlot
+
+grid.newpage()
+grid.draw(rbind(ggplotGrob(IndoPlot), ggplotGrob(DRCPlot), size = "last"))
+
+
+
+IndoDRCPlot3 <- ggplot() +
+  geom_line(aes(y = num_TC, x = year), size = 1, data = IndoDRC, stat="identity") +
+  geom_point(aes(y = num_TC, x = year), shape = 21, fill = "red", size = 2, data = Forceful, stat="identity") +
+  geom_point(aes(y = num_TC, x = year), shape = 21, size = 2,fill = "blue", data = Peaceful, stat="identity") +
+  scale_x_continuous(breaks=seq(1945,2010,5))+
+  scale_y_continuous(limits = c(0,7), breaks=seq(0,7,1))+
+  facet_grid(statename ~ ., scales = "free_y")+
+  ggtitle("Comparison of TCs Experienced by Indonesia and DRC") + labs(x="Year", y="Number of Active TCs")+
+  theme(legend.position="bottom", legend.direction="horizontal", legend.title = element_blank())+
+  theme(axis.line = element_line(size=1, colour = "black"),
+        panel.grid.major = element_line(colour = "#d3d3d3"), panel.grid.minor = element_blank(),
+        panel.border = element_blank(), panel.background = element_blank()) +
+  theme(plot.title = element_text(size = 14, family = "Tahoma", face = "bold"),
+        text=element_text(family="Tahoma"),
+        axis.text.x=element_text(colour="black", size = 10),
+        axis.text.y=element_text(colour="black", size = 10),
+        legend.key=element_rect(fill="white", colour="white"))
+
+
+IndoDRCPlot3 
 
 # Main Results Table
 
