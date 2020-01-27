@@ -12,8 +12,8 @@ library(survminer)
 library("xfun")
 library(ggthemes)
 library(extrafont)
-font_import() #Uncomment if needed.
-loadfonts(device = "win") #Uncomment if needed.
+font_import()
+loadfonts(device = "win")
 library(grid)
 
 
@@ -33,107 +33,113 @@ options(scipen = 50) # bias against scientific notation for convenience
 
 # Loading data
 
-TC_Dat <- read.csv("Survival-Data-TC.csv")
-names(TCDat)
+tc_dat <- read.csv("Survival-Data-TC.csv")
+names(tc_dat)
 
-summary(TCDat$area_1000)
-TCDat$area_1000_log <- log(TCDat$area_1000)
-summary(TCDat$area_1000_log)
+summary(tc_dat$area_1000)
+tc_dat$area_1000_log <- log(tc_dat$area_1000)
+summary(tc_dat$area_1000_log)
 
 # Subset datasets
 
-TC2On <- TCDat[TCDat$event_num >= 2, ]
+tc_multi <- tc_dat[tc_dat$event_num >= 2, ]
 
-TC2or3 <- filter(TCDat, event_num == 2 | event_num == 3)
+tc23 <- filter(tc_dat, event_num == 2 | event_num == 3)
 
-TC4or5 <- filter(TCDat, event_num == 4 | event_num == 5)
+tc45 <- filter(tc_dat, event_num == 4 | event_num == 5)
 
-TC6orMore <- filter(TCDat, event_num >= 6)
+tc6_more <- filter(tc_dat, event_num >= 6)
 
-TC1 <- filter(TCDat, event_num == 1)
+tc1 <- filter(tc_dat, event_num == 1)
 
-TC2 <- filter(TCDat, event_num == 2)
+tc2 <- filter(tc_dat, event_num == 2)
 
-TC3 <- filter(TCDat, event_num == 3)
+tc3 <- filter(tc_dat, event_num == 3)
 
-TC4 <- filter(TCDat, event_num == 4)
+tc4 <- filter(tc_dat, event_num == 4)
 
-TC5 <- filter(TCDat, event_num == 5)
+tc5 <- filter(tc_dat, event_num == 5)
+
+tc6 <- filter(tc_dat, event_num == 6)
 
 # Survival objects
 
-TCDat.Elapsed <- Surv(TCDat$alt_start, TCDat$alt_stop, TCDat$new_TC_dummy)
-TCDat.Gap <- Surv(TCDat$start, TCDat$stop, TCDat$new_TC_dummy)
+tc_multi_elapse <- Surv(tc_dat$alt_start, tc_dat$alt_stop, tc_dat$new_tc_dummy)
+tc_dat_gap <- Surv(tc_dat$start, tc_dat$stop, tc_dat$new_tc_dummy)
 
-TC2On.Elapsed <- Surv(TC2On$alt_start, TC2On$alt_stop, TC2On$new_TC_dummy)
-TC2On.Gap <- Surv(TC2On$start, TC2On$stop, TC2On$new_TC_dummy)
+tc_multi_elapse <- Surv(tc_multi$alt_start, tc_multi$alt_stop, tc_multi$new_tc_dummy)
+tc_multi_gap <- Surv(tc_multi$start, tc_multi$stop, tc_multi$new_tc_dummy)
 
-TC1.Elapsed <- Surv(TC1$alt_start, TC1$alt_stop, TC1$new_TC_dummy)
-TC1.Gap <- Surv(TC1$start, TC1$stop, TC1$new_TC_dummy)
+tc1_elapse <- Surv(tc1$alt_start, tc1$alt_stop, tc1$new_tc_dummy)
+tc1_gap <- Surv(tc1$start, tc1$stop, tc1$new_tc_dummy)
 
-TC2.Elapsed <- Surv(TC2$alt_start, TC2$alt_stop, TC2$new_TC_dummy)
-TC2.Gap <- Surv(TC2$start, TC2$stop, TC2$new_TC_dummy)
+tc2_elapse <- Surv(tc2$alt_start, tc2$alt_stop, tc2$new_tc_dummy)
+tc2_gap <- Surv(tc2$start, tc2$stop, tc2$new_tc_dummy)
 
-TC2or3.Elapsed <- Surv(TC2or3$alt_start, TC2or3$alt_stop, TC2or3$new_TC_dummy)
-TC2or3.Gap <- Surv(TC2or3$start, TC2or3$stop, TC2or3$new_TC_dummy)
+tc23_elapse <- Surv(tc23$alt_start, tc23$alt_stop, tc23$new_tc_dummy)
+tc23_gap <- Surv(tc23$start, tc23$stop, tc23$new_tc_dummy)
 
-TC3.Elapsed <- Surv(TC3$alt_start, TC3$alt_stop, TC3$new_TC_dummy)
-TC3.Gap <- Surv(TC3$start, TC3$stop, TC3$new_TC_dummy)
+tc3_elapse <- Surv(tc3$alt_start, tc3$alt_stop, tc3$new_tc_dummy)
+tc3_gap <- Surv(tc3$start, tc3$stop, tc3$new_tc_dummy)
 
-TC4.Elapsed <- Surv(TC4$alt_start, TC4$alt_stop, TC4$new_TC_dummy)
-TC4.Gap <- Surv(TC4$start, TC4$stop, TC4$new_TC_dummy)
+tc4_elapse <- Surv(tc4$alt_start, tc4$alt_stop, tc4$new_tc_dummy)
+tc4_gap <- Surv(tc4$start, tc4$stop, tc4$new_tc_dummy)
 
-TC4or5.Elapsed <- Surv(TC4or5$alt_start, TC4or5$alt_stop, TC4or5$new_TC_dummy)
-TC4or5.Gap <- Surv(TC4or5$start, TC4or5$stop, TC4or5$new_TC_dummy)
+tc45_elapse <- Surv(tc45$alt_start, tc45$alt_stop, tc45$new_tc_dummy)
+tc45_gap <- Surv(tc45$start, tc45$stop, tc45$new_tc_dummy)
 
-TC5.Elapsed <- Surv(TC5$alt_start, TC5$alt_stop, TC5$new_TC_dummy)
-TC5.Gap <- Surv(TC5$start, TC5$stop, TC5$new_TC_dummy)
+tc5_elapse <- Surv(tc5$alt_start, tc5$alt_stop, tc5$new_tc_dummy)
+tc5_gap <- Surv(tc5$start, tc5$stop, tc5$new_tc_dummy)
 
-TC6.Elapsed <- Surv(TC6$alt_start, TC6$alt_stop, TC6$new_TC_dummy)
-TC6.Gap <- Surv(TC6$start, TC6$stop, TC6$new_TC_dummy)
+tc6_elapse <- Surv(tc6$alt_start, tc6$alt_stop, tc6$new_tc_dummy)
+tc6_gap <- Surv(tc6$start, tc6$stop, tc6$new_tc_dummy)
 
-TC6orMore.Elapsed <- Surv(TC6orMore$alt_start, TC6orMore$alt_stop,
-                          TC6orMore$new_TC_dummy)
-TC6orMore.Gap <- Surv(TC6orMore$start, TC6orMore$stop, TC6orMore$new_TC_dummy)
+tc6_more_elapse <- Surv(tc6_more$alt_start, tc6_more$alt_stop,
+                          tc6_more$new_tc_dummy)
+tc6_more_gap <- Surv(tc6_more$start, tc6_more$stop, tc6_more$new_tc_dummy)
 
 #Linear Decay PWP Models
 
-TCAll.PWP <- coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC  + Forceful_LinDecay +
+tcAll.PWP <- coxph(tc_dat_gap ~ Peace_wtc + Fighting_wtc  + Forceful_LinDecay +
                   GoodEnd_LinDecay + polity2 + area_1000_log + lmtnest + ELF +
-                  strata(event_num) + cluster(ccode), data = TCDat,
+                  strata(event_num) + cluster(ccode), data = tc_dat,
                   method = "efron")
 
-TC.1.PWP <- coxph(TC1.Gap ~ polity2 + area_1000_log + lmtnest + ELF
-                  + strata(event_num) + cluster(ccode), data = TC1,
+tc.1.PWP <- coxph(tc1_gap ~ polity2 + area_1000_log + lmtnest + ELF
+                  + strata(event_num) + cluster(ccode), data = tc1,
                   method = "efron")
 
-TC2or3.PWP.LinDecay <- coxph(TC2or3.Gap ~ Peace_wTC + Fighting_wTC  +
+tc23.PWP.LinDecay <- coxph(tc23_gap ~ Peace_wtc + Fighting_wtc  +
                             Forceful_LinDecay + GoodEnd_LinDecay + polity2
                             + area_1000_log + lmtnest + ELF + strata(event_num)
-                            + cluster(ccode), data = TC2or3, method = "efron")
+                            + cluster(ccode), data = tc23, method = "efron")
 
-TC4or5.PWP.LinDecay <- coxph(TC4or5.Gap ~ Peace_wTC + Fighting_wTC +
+tc45.PWP.LinDecay <- coxph(tc45_gap ~ Peace_wtc + Fighting_wtc +
                             Forceful_LinDecay + GoodEnd_LinDecay + polity2
                             + area_1000_log + lmtnest + ELF + strata(event_num)
-                            + cluster(ccode), data = TC4or5, method = "efron")
+                            + cluster(ccode), data = tc45, method = "efron")
 
-TC6orMore.PWP.LinDecay <- coxph(TC6orMore.Gap ~ Peace_wTC + Fighting_wTC  +
+tc6_more.PWP.LinDecay <- coxph(tc6_more_gap ~ Peace_wtc + Fighting_wtc  +
                                Forceful_LinDecay + GoodEnd_LinDecay + polity2
                                + area_1000_log + lmtnest + ELF
                                + strata(event_num) + cluster(ccode),
-                               data = TC6orMore, method = "efron")
+                               data = tc6_more, method = "efron")
 
-summary(TCAll.PWP)
+summary(tcAll.PWP)
 
 
 # Main Results Table
 
-stargazer(TCAll.PWP, TC.1.PWP, TC2or3.PWP.LinDecay, TC4or5.PWP.LinDecay,
-          TC6orMore.PWP.LinDecay, type = "latex",
+stargazer(tcAll.PWP, tc.1.PWP, tc23.PWP.LinDecay, tc45.PWP.LinDecay,
+          tc6_more.PWP.LinDecay, type = "latex",
           title = "PWP Gap Time Model Results",
-          dep.var.labels = c("All TCs", "First TC", " TC 2 or 3", "TC 4 or 5",
+          dep.var.labels = c("All TCs",
+                             "First TC",
+                             " TC 2 or 3",
+                             "TC 4 or 5",
                              "TC 6+"),
-          covariate.labels = c("Peace w/ TC", "Fighting w/ TC",
+          covariate.labels = c("Peace w/ TC",
+                               "Fighting w/ TC",
                              "Forceful Reintegration",
                              "Favorable Outcome for TC",
                              "Polity 2 Score",
@@ -143,46 +149,46 @@ stargazer(TCAll.PWP, TC.1.PWP, TC2or3.PWP.LinDecay, TC4or5.PWP.LinDecay,
           keep.stat = c("n"))
 
 
-# Absorbed by other TC as a control
+# Absorbed by other tc as a control
 
-TCAll.AbsorbedControl <- coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC  +
+tcAll.AbsorbControl <- coxph(tc_dat_gap ~ Peace_wtc + Fighting_wtc  +
                                Forceful_LinDecay + GoodEnd_LinDecay +
                                Absorbed_LinDecay + polity2 + area_1000_log +
                                lmtnest + ELF + strata(event_num) +
-                               cluster(ccode), data = TCDat, method = "efron")
+                               cluster(ccode), data = tc_dat, method = "efron")
 
-TC.1.AbsorbControl <- coxph(TC1.Gap ~ polity2 + area_1000_log + lmtnest + ELF +
-                            strata(event_num) + cluster(ccode), data = TC1,
+tc.1.AbsorbControl <- coxph(tc1_gap ~ polity2 + area_1000_log + lmtnest + ELF +
+                            strata(event_num) + cluster(ccode), data = tc1,
                             method = "efron")
 
-TC2or3.AbsorbControl <- coxph(TC2or3.Gap ~ Peace_wTC + Fighting_wTC  +
+tc23.AbsorbControl <- coxph(tc23_gap ~ Peace_wtc + Fighting_wtc  +
                              Forceful_LinDecay + GoodEnd_LinDecay +
                              Absorbed_LinDecay + polity2 + area_1000_log +
                              lmtnest + ELF + strata(event_num) +
-                             cluster(ccode), data = TC2or3, method = "efron")
+                             cluster(ccode), data = tc23, method = "efron")
 
-TC4or5.AbsorbControl <- coxph(TC4or5.Gap ~ Peace_wTC + Fighting_wTC  +
+tc45.AbsorbControl <- coxph(tc45_gap ~ Peace_wtc + Fighting_wtc  +
                              Forceful_LinDecay + GoodEnd_LinDecay +
                              Absorbed_LinDecay + polity2 + area_1000_log +
                              lmtnest + ELF + strata(event_num) +
-                             cluster(ccode), data = TC4or5, method = "efron")
+                             cluster(ccode), data = tc45, method = "efron")
 
-TC6orMore.AbsorbControl <- coxph(TC6orMore.Gap ~ Peace_wTC + Fighting_wTC  +
+tc6_more.AbsorbControl <- coxph(tc6_more_gap ~ Peace_wtc + Fighting_wtc  +
                                 Forceful_LinDecay + GoodEnd_LinDecay +
                                 Absorbed_LinDecay + polity2 + area_1000_log +
                                 lmtnest + ELF + strata(event_num) +
-                                cluster(ccode), data = TC6orMore,
+                                cluster(ccode), data = tc6_more,
                                 method = "efron")
 
-summary(TCAll.AbsorbControl)
+summary(tcAll.AbsorbControl)
 
-stargazer(TCAll.AbsorbControl, TC.1.AbsorbControl, TC2or3.AbsorbControl,
-          TC4or5.AbsorbControl, TC6orMore.AbsorbControl,
+stargazer(tcAll.AbsorbControl, tc.1.AbsorbControl, tc23.AbsorbControl,
+          tc45.AbsorbControl, tc6_more.AbsorbControl,
           type = "latex",
           title = "PWP Gap Time Model Results - Absorbed as a Control",
           dep.var.labels = c("All TCs",
                              "First TC",
-                             " TC 2 or 3",
+                             "TC 2 or 3",
                              "TC 4 or 5",
                              "TC 6+"),
           covariate.labels = c("Peace w/ TC",
@@ -198,88 +204,96 @@ stargazer(TCAll.AbsorbControl, TC.1.AbsorbControl, TC2or3.AbsorbControl,
 
 # All End Types Disaggregated
 
-TCAll.Disag <- coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC  + Forceful_LinDecay +
+tcAll.Disag <- coxph(tc_dat_gap ~ Peace_wtc + Fighting_wtc  + Forceful_LinDecay +
                     Promoted_LinDecay + Peaceful_LinDecay + Absorbed_LinDecay +
                     polity2 + area_1000_log + lmtnest + ELF + strata(event_num)
-                    + cluster(ccode), data = TCDat, method = "efron")
+                    + cluster(ccode), data = tc_dat, method = "efron")
 
-TC.1.Disag <- coxph(TC1.Gap ~ +polity2 + area_1000_log + lmtnest + ELF
-                    + strata(event_num) + cluster(ccode), data = TC1,
+tc.1.Disag <- coxph(tc1_gap ~ +polity2 + area_1000_log + lmtnest + ELF
+                    + strata(event_num) + cluster(ccode), data = tc1,
                     method = "efron")
 
-TC2or3.Disag <- coxph(TC2or3.Gap ~ Peace_wTC + Fighting_wTC  + Forceful_LinDecay
+tc23.Disag <- coxph(tc23_gap ~ Peace_wtc + Fighting_wtc  + Forceful_LinDecay
                      + Promoted_LinDecay + Peaceful_LinDecay +
                      Absorbed_LinDecay + polity2 + area_1000_log + lmtnest +
-                     ELF + strata(event_num) + cluster(ccode), data = TC2or3,
+                     ELF + strata(event_num) + cluster(ccode), data = tc23,
                      method = "efron")
 
-TC4or5.Disag <- coxph(TC4or5.Gap ~ Peace_wTC + Fighting_wTC  + Forceful_LinDecay
+tc45.Disag <- coxph(tc45_gap ~ Peace_wtc + Fighting_wtc  + Forceful_LinDecay
                      + Promoted_LinDecay + Peaceful_LinDecay +
                      Absorbed_LinDecay + polity2 + area_1000_log + lmtnest +
-                     ELF + strata(event_num) + cluster(ccode), data = TC4or5,
+                     ELF + strata(event_num) + cluster(ccode), data = tc45,
                      method = "efron")
 
-TC6orMore.Disag <- coxph(TC6orMore.Gap ~ Peace_wTC + Fighting_wTC  +
+tc6_more.Disag <- coxph(tc6_more_gap ~ Peace_wtc + Fighting_wtc  +
                         Forceful_LinDecay + Promoted_LinDecay +
                         Peaceful_LinDecay + Absorbed_LinDecay + polity2 +
                         area_1000_log + lmtnest + ELF + strata(event_num) +
-                        cluster(ccode), data = TC6orMore, method = "efron")
+                        cluster(ccode), data = tc6_more, method = "efron")
 
-summary(TCAll.Disag)
+summary(tcAll.Disag)
 
-stargazer(TCAll.Disag, TC.1.Disag, TC2or3.Disag, TC4or5.Disag, TC6orMore.Disag,
+stargazer(tcAll.Disag, tc.1.Disag, tc23.Disag, tc45.Disag, tc6_more.Disag,
           type = "latex",
           title = "PWP Gap Time Model Results - Disaggregated",
-          dep.var.labels = c("All TCs", "First TC", " TC 2 or 3", "TC 4 or 5",
-                             "TC 6+"),
-          covariate.labels = c("Peace w/ TC", "Fighting w/ TC",
-                               "Forceful Reintegration", "Promoted",
-                               "Peaceful Reintegration", "Absorbed",
-                               "Polity 2 Score", "State Area (logged)",
-                               "Mountains", "ELF"),
+          dep.var.labels = c("All TCs",
+                             "First TC",
+                             "TC 2 or 3",
+                             "TC 4 or 5",
+                             "tc 6+"),
+          covariate.labels = c("Peace w/ TC",
+                               "Fighting w/ TC",
+                               "Forceful Reintegration",
+                               "Promoted",
+                               "Peaceful Reintegration",
+                               "Absorbed",
+                               "Polity 2 Score",
+                               "State Area (logged)",
+                               "Mountains",
+                               "ELF"),
           keep.stat = c("n"))
 
 # Exponential Decay 20 year half life
 
-TCAll.Exponential20 <- coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC  +
+tcAll.Exponential20 <- coxph(tc_dat_gap ~ Peace_wtc + Fighting_wtc  +
                              Forceful_ExpDecay_20 + GoodEnd_ExpDecay_20 +
                              polity2 + area_1000_log + lmtnest + ELF +
-                             strata(event_num) + cluster(ccode), data = TCDat,
+                             strata(event_num) + cluster(ccode), data = tc_dat,
                              method = "efron")
 
-TC.1.Exponential20 <- coxph(TC1.Gap ~ polity2 + area_1000_log + lmtnest + ELF +
-                            + strata(event_num) + cluster(ccode), data = TC1,
+tc.1.Exponential20 <- coxph(tc1_gap ~ polity2 + area_1000_log + lmtnest + ELF +
+                            + strata(event_num) + cluster(ccode), data = tc1,
                             method = "efron")
 
-TC2or3.Exponential20 <- coxph(TC2or3.Gap ~ Peace_wTC + Fighting_wTC  +
+tc23.Exponential20 <- coxph(tc23_gap ~ Peace_wtc + Fighting_wtc  +
                               Forceful_ExpDecay_20 + GoodEnd_ExpDecay_20 +
                               polity2 + area_1000_log + lmtnest + ELF +
-                              strata(event_num) + cluster(ccode), data = TC2or3,
+                              strata(event_num) + cluster(ccode), data = tc23,
                               method = "efron")
 
-TC4or5.Exponential20 <- coxph(TC4or5.Gap ~ Peace_wTC + Fighting_wTC  +
+tc45.Exponential20 <- coxph(tc45_gap ~ Peace_wtc + Fighting_wtc  +
                               Forceful_ExpDecay_20 + GoodEnd_ExpDecay_20 +
                               polity2 + area_1000_log + lmtnest + ELF +
-                              strata(event_num) + cluster(ccode), data = TC4or5,
+                              strata(event_num) + cluster(ccode), data = tc45,
                               method = "efron")
 
-TC6orMore.Exponential20 <- coxph(TC6orMore.Gap ~ Peace_wTC + Fighting_wTC  +
+tc6_more.Exponential20 <- coxph(tc6_more_gap ~ Peace_wtc + Fighting_wtc  +
                                  Forceful_ExpDecay_20 + GoodEnd_ExpDecay_20 +
                                  polity2 + area_1000_log + lmtnest + ELF +
                                  strata(event_num) + cluster(ccode),
-                                 data = TC6orMore, method = "efron")
+                                 data = tc6_more, method = "efron")
 
-summary(TCAll.Exponential20)
+summary(tcAll.Exponential20)
 
 
-stargazer(TCAll.Exponential20, TC.1.Exponential20, TC2or3.Exponential20,
-          TC4or5.Exponential20, TC6orMore.Exponential20,
+stargazer(tcAll.Exponential20, tc.1.Exponential20, tc23.Exponential20,
+          tc45.Exponential20, tc6_more.Exponential20,
           type = "latex",
           title = "PWP Gap Time Model Results - Exponential Decay with 20 year
           Half Life",
-          dep.var.labels = c("All TCs",
+          dep.var.labels = c("All tcs",
                              "First TC",
-                             " TC 2 or 3",
+                             "TC 2 or 3",
                              "TC 4 or 5",
                              "TC 6+"),
           covariate.labels = c("Peace w/ TC",
@@ -294,45 +308,45 @@ stargazer(TCAll.Exponential20, TC.1.Exponential20, TC2or3.Exponential20,
 
 # Exponential Decay 10 year half life
 
-TCAll.Exponential10 <- coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC  +
+tcAll.Exponential10 <- coxph(tc_dat_gap ~ Peace_wtc + Fighting_wtc  +
                              Forceful_ExpDecay_10 + GoodEnd_ExpDecay_10 +
                              polity2 + area_1000_log + lmtnest + ELF +
-                             strata(event_num) + cluster(ccode), data = TCDat,
+                             strata(event_num) + cluster(ccode), data = tc_dat,
                              method = "efron")
 
-TC.1.Exponential10 <- coxph(TC1.Gap ~ polity2 + area_1000_log + lmtnest + ELF +
-                            strata(event_num) + cluster(ccode), data = TC1,
+tc.1.Exponential10 <- coxph(tc1_gap ~ polity2 + area_1000_log + lmtnest + ELF +
+                            strata(event_num) + cluster(ccode), data = tc1,
                             method = "efron")
 
-TC2or3.Exponential10 <- coxph(TC2or3.Gap ~ Peace_wTC + Fighting_wTC  +
+tc23.Exponential10 <- coxph(tc23_gap ~ Peace_wtc + Fighting_wtc  +
                               Forceful_ExpDecay_10 + GoodEnd_ExpDecay_10 +
                               polity2 + area_1000_log + lmtnest + ELF +
-                              strata(event_num) + cluster(ccode), data = TC2or3,
+                              strata(event_num) + cluster(ccode), data = tc23,
                               method = "efron")
 
-TC4or5.Exponential10 <- coxph(TC4or5.Gap ~ Peace_wTC + Fighting_wTC  +
+tc45.Exponential10 <- coxph(tc45_gap ~ Peace_wtc + Fighting_wtc  +
                               Forceful_ExpDecay_10 + GoodEnd_ExpDecay_10 +
                               polity2 + area_1000_log + lmtnest + ELF +
-                              strata(event_num) + cluster(ccode), data = TC4or5,
+                              strata(event_num) + cluster(ccode), data = tc45,
                               method = "efron")
 
-TC6orMore.Exponential10 <- coxph(TC6orMore.Gap ~ Peace_wTC + Fighting_wTC  +
+tc6_more.Exponential10 <- coxph(tc6_more_gap ~ Peace_wtc + Fighting_wtc  +
                                  Forceful_ExpDecay_10 + GoodEnd_ExpDecay_10 +
                                  polity2 + area_1000_log + lmtnest + ELF +
                                  strata(event_num) + cluster(ccode),
-                                 data = TC6orMore, method = "efron")
+                                 data = tc6_more, method = "efron")
 
-summary(TCAll.Exponential10)
+summary(tcAll.Exponential10)
 
 
-stargazer(TCAll.Exponential10, TC.1.Exponential10, TC2or3.Exponential10,
-          TC4or5.Exponential10, TC6orMore.Exponential10,
+stargazer(tcAll.Exponential10, tc.1.Exponential10, tc23.Exponential10,
+          tc45.Exponential10, tc6_more.Exponential10,
           type = "latex",
           title = "PWP Gap Time Model Results - Exponential Decay with 10 year
           Half Life",
           dep.var.labels = c("All TCs",
                              "First TC",
-                             " TC 2 or 3",
+                             "TC 2 or 3",
                              "TC 4 or 5",
                              "TC 6+"),
           covariate.labels = c("Peace w/ TC",
@@ -347,34 +361,34 @@ stargazer(TCAll.Exponential10, TC.1.Exponential10, TC2or3.Exponential10,
 
 # 20 Year Binary
 
-TCAll.t20 <- coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC  + Forceful_t20 +
+tcAll.t20 <- coxph(tc_dat_gap ~ Peace_wtc + Fighting_wtc  + Forceful_t20 +
                    GoodEnd_t20 + polity2 + area_1000_log + lmtnest + ELF +
-                   strata(event_num) + cluster(ccode), data = TCDat,
+                   strata(event_num) + cluster(ccode), data = tc_dat,
                    method = "efron")
 
-TC.1.t20 <- coxph(TC1.Gap ~ polity2 + area_1000_log + lmtnest + ELF +
-                  strata(event_num) + cluster(ccode), data = TC1,
+tc.1.t20 <- coxph(tc1_gap ~ polity2 + area_1000_log + lmtnest + ELF +
+                  strata(event_num) + cluster(ccode), data = tc1,
                   method = "efron")
 
-TC2or3.t20 <- coxph(TC2or3.Gap ~ Peace_wTC + Fighting_wTC  + Forceful_t20 +
+tc23.t20 <- coxph(tc23_gap ~ Peace_wtc + Fighting_wtc  + Forceful_t20 +
                     GoodEnd_t20 + polity2 + area_1000_log + lmtnest + ELF +
-                    strata(event_num) + cluster(ccode), data = TC2or3,
+                    strata(event_num) + cluster(ccode), data = tc23,
                     method = "efron")
 
-TC4or5.t20 <- coxph(TC4or5.Gap ~ Peace_wTC + Fighting_wTC  + Forceful_t20 +
+tc45.t20 <- coxph(tc45_gap ~ Peace_wtc + Fighting_wtc  + Forceful_t20 +
                     GoodEnd_t20 + polity2 + area_1000_log + lmtnest + ELF +
-                    strata(event_num) + cluster(ccode), data = TC4or5,
+                    strata(event_num) + cluster(ccode), data = tc45,
                     method = "efron")
 
-TC6orMore.t20 <- coxph(TC6orMore.Gap ~ Peace_wTC + Fighting_wTC +
+tc6_more.t20 <- coxph(tc6_more_gap ~ Peace_wtc + Fighting_wtc +
                        Forceful_t20 + GoodEnd_t20 + polity2 + area_1000_log +
                        lmtnest + ELF + strata(event_num) + cluster(ccode),
-                       data = TC6orMore, method = "efron")
+                       data = tc6_more, method = "efron")
 
-summary(TCAll.t20)
+summary(tcAll.t20)
 
 
-stargazer(TCAll.t20, TC.1.t20, TC2or3.t20, TC4or5.t20, TC6orMore.t20,
+stargazer(tcAll.t20, tc.1.t20, tc23.t20, tc45.t20, tc6_more.t20,
           type = "latex",
           title = "PWP Gap Time Model Results - 20 Year Binary Indicator",
           dep.var.labels = c("All TCs",
@@ -394,11 +408,12 @@ stargazer(TCAll.t20, TC.1.t20, TC2or3.t20, TC4or5.t20, TC6orMore.t20,
 
 # Hurdle Model - This seems so wrong. Its just lumping everything together.
 
-hurdlemod <- hurdle(TC_tally ~ Peace_wTC + Fighting_wTC  + Forceful_LinDecay +
+hurdlemod <- hurdle(tc_tally ~ Peace_wtc + Fighting_wtc  + Forceful_LinDecay +
                     GoodEnd_LinDecay + polity2 + area_1000_log + lmtnest +
                     ELF | polity2 + area_1000_log + lmtnest + ELF,
-                    data = TCDat)
+                    data = tc_dat)
 
 summary(hurdlemod)
 
 # Censored Probit
+
