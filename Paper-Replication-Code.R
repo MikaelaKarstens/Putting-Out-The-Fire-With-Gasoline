@@ -1,6 +1,6 @@
-# Replication code for "Assessing State Making Strategies" by Douglas Lemke and Mikaela Karstens
-#TEST
-# Required packages for replication - Please install if needed (FIX THESE TO REMOVE UNUSED)
+# Code for "Assessing State Making Strategies" by D. Lemke and M. Karstens
+
+# Required packages for replication - Please install if needed - VERIFY
 
 library(survival)
 library(stargazer)
@@ -12,8 +12,8 @@ library(survminer)
 library("xfun")
 library(ggthemes)
 library(extrafont)
-font_import()
-loadfonts(device = "win")
+font_import() #Uncomment if needed.
+loadfonts(device = "win") #Uncomment if needed.
 library(grid)
 
 
@@ -29,20 +29,20 @@ library(GGally)
 
 # Settings
 
-options(scipen = 50) # no scientific notation
+options(scipen = 50) # bias against scientific notation for convenience
 
 # Loading data
 
-TCDat <- read.csv("Survival-Data-TC.csv")
+TC_Dat <- read.csv("Survival-Data-TC.csv")
 names(TCDat)
 
 summary(TCDat$area_1000)
 TCDat$area_1000_log <- log(TCDat$area_1000)
 summary(TCDat$area_1000_log)
 
-# Creating subset datasets
+# Subset datasets
 
-TC2On <- TCDat[TCDat$event_num>=2,]
+TC2On <- TCDat[TCDat$event_num >= 2, ]
 
 TC2or3 <- filter(TCDat, event_num == 2 | event_num == 3)
 
@@ -60,42 +60,42 @@ TC4 <- filter(TCDat, event_num == 4)
 
 TC5 <- filter(TCDat, event_num == 5)
 
-# Creating all survival objects
+# Survival objects
 
-TCDat.Elapsed<-Surv(TCDat$alt_start,TCDat$alt_stop,TCDat$new_TC_dummy)
-TCDat.Gap<-Surv(TCDat$start,TCDat$stop,TCDat$new_TC_dummy)
+TCDat.Elapsed <- Surv(TCDat$alt_start, TCDat$alt_stop, TCDat$new_TC_dummy)
+TCDat.Gap<-Surv(TCDat$start, TCDat$stop, TCDat$new_TC_dummy)
 
-TC2On.Elapsed<-Surv(TC2On$alt_start,TC2On$alt_stop,TC2On$new_TC_dummy)
-TC2On.Gap<-Surv(TC2On$start,TC2On$stop,TC2On$new_TC_dummy)
+TC2On.Elapsed <- Surv(TC2On$alt_start, TC2On$alt_stop, TC2On$new_TC_dummy)
+TC2On.Gap <- Surv(TC2On$start, TC2On$stop, TC2On$new_TC_dummy)
 
-TC1.Elapsed<-Surv(TC1$alt_start,TC1$alt_stop,TC1$new_TC_dummy)
-TC1.Gap<-Surv(TC1$start,TC1$stop,TC1$new_TC_dummy)
+TC1.Elapsed <- Surv(TC1$alt_start, TC1$alt_stop, TC1$new_TC_dummy)
+TC1.Gap <- Surv(TC1$start, TC1$stop, TC1$new_TC_dummy)
 
-TC2.Elapsed<-Surv(TC2$alt_start,TC2$alt_stop,TC2$new_TC_dummy)
-TC2.Gap<-Surv(TC2$start,TC2$stop,TC2$new_TC_dummy)
+TC2.Elapsed <- Surv(TC2$alt_start, TC2$alt_stop,TC2$new_TC_dummy)
+TC2.Gap <- Surv(TC2$start,TC2$stop,TC2$new_TC_dummy)
 
-TC2or3.Elapsed<-Surv(TC2or3$alt_start,TC2or3$alt_stop,TC2or3$new_TC_dummy)
-TC2or3.Gap<-Surv(TC2or3$start,TC2or3$stop,TC2or3$new_TC_dummy)
+TC2or3.Elapsed <- Surv(TC2or3$alt_start,TC2or3$alt_stop,TC2or3$new_TC_dummy)
+TC2or3.Gap <- Surv(TC2or3$start,TC2or3$stop,TC2or3$new_TC_dummy)
 
-TC3.Elapsed<-Surv(TC3$alt_start,TC3$alt_stop,TC3$new_TC_dummy)
-TC3.Gap<-Surv(TC3$start,TC3$stop,TC3$new_TC_dummy)
+TC3.Elapsed <- Surv(TC3$alt_start,TC3$alt_stop,TC3$new_TC_dummy)
+TC3.Gap <- Surv(TC3$start,TC3$stop,TC3$new_TC_dummy)
 
-TC4.Elapsed<-Surv(TC4$alt_start,TC4$alt_stop,TC4$new_TC_dummy)
-TC4.Gap<-Surv(TC4$start,TC4$stop,TC4$new_TC_dummy)
+TC4.Elapsed <- Surv(TC4$alt_start,TC4$alt_stop,TC4$new_TC_dummy)
+TC4.Gap <- Surv(TC4$start,TC4$stop,TC4$new_TC_dummy)
 
-TC4or5.Elapsed<-Surv(TC4or5$alt_start,TC4or5$alt_stop,TC4or5$new_TC_dummy)
-TC4or5.Gap<-Surv(TC4or5$start,TC4or5$stop,TC4or5$new_TC_dummy)
+TC4or5.Elapsed <- Surv(TC4or5$alt_start,TC4or5$alt_stop,TC4or5$new_TC_dummy)
+TC4or5.Gap <- Surv(TC4or5$start,TC4or5$stop,TC4or5$new_TC_dummy)
 
-TC5.Elapsed<-Surv(TC5$alt_start,TC5$alt_stop,TC5$new_TC_dummy)
-TC5.Gap<-Surv(TC5$start,TC5$stop,TC5$new_TC_dummy)
+TC5.Elapsed <- Surv(TC5$alt_start,TC5$alt_stop,TC5$new_TC_dummy)
+TC5.Gap <- Surv(TC5$start,TC5$stop,TC5$new_TC_dummy)
 
-TC6.Elapsed<-Surv(TC6$alt_start,TC6$alt_stop,TC6$new_TC_dummy)
+TC6.Elapsed <- Surv(TC6$alt_start,TC6$alt_stop,TC6$new_TC_dummy)
 TC6.Gap<-Surv(TC6$start,TC6$stop,TC6$new_TC_dummy)
 
-TC6orMore.Elapsed<-Surv(TC6orMore$alt_start,TC6orMore$alt_stop,TC6orMore$new_TC_dummy)
-TC6orMore.Gap<-Surv(TC6orMore$start,TC6orMore$stop,TC6orMore$new_TC_dummy)
+TC6orMore.Elapsed <- Surv(TC6orMore$alt_start,TC6orMore$alt_stop,TC6orMore$new_TC_dummy)
+TC6orMore.Gap <- Surv(TC6orMore$start,TC6orMore$stop,TC6orMore$new_TC_dummy)
 
-####### Linear Decay PWP Models #####
+#Linear Decay PWP Models 
 
 TCAll.PWP <-coxph(TCDat.Gap ~ Peace_wTC + Fighting_wTC  + Forceful_LinDecay + GoodEnd_LinDecay 
                            +polity2 + area_1000_log + lmtnest + ELF 
@@ -118,121 +118,6 @@ TC6orMore.PWP.LinDecay <-coxph(TC6orMore.Gap ~ Peace_wTC + Fighting_wTC  + Force
 
 summary(TCAll.PWP)
 
-################ Experimenting. 
-
-IndoDRC <-  TCDat %>% filter(statename %in% c("Indonesia", "ZaireDRC"))
-Forceful <- filter(IndoDRC, Forceful == 1)
-Peaceful <- filter(IndoDRC, Peaceful == 1 | Promoted == 1)
-
-Indo <-  TCDat %>% filter(statename %in% c("Indonesia"))
-ForcefulI <- filter(Indo, Forceful == 1)
-PeacefulI <- filter(Indo, Peaceful == 1 | Promoted == 1)
-
-DRC <-  TCDat %>% filter(statename %in% c("ZaireDRC"))
-ForcefulD <- filter(DRC, Forceful == 1)
-PeacefulD <- filter(DRC, Peaceful == 1 | Promoted == 1)
-
-IndoDRCPlot1 <- ggplot() +
-  geom_line(aes(y = TC_tally, x = year, colour = statename), size = 1, data = IndoDRC, stat="identity") +
-  geom_point(aes(y = TC_tally, x = year, colour = statename), shape = 21, fill = "red", size = 2, data = Forceful, stat="identity") +
-  geom_point(aes(y = TC_tally, x = year, colour = statename), shape = 21, size = 2,fill = "blue", data = Peaceful, stat="identity") +
-              scale_x_continuous(breaks=seq(1945,2010,5))+
-              ggtitle("Comparison of TCs Experienced by Indonesia and DRC") + labs(x="Year", y="Total Number of TCs")+
-              theme(legend.position="bottom", legend.direction="horizontal", legend.title = element_blank())+
-              theme(axis.line = element_line(size=1, colour = "black"),
-                    panel.grid.major = element_line(colour = "#d3d3d3"), panel.grid.minor = element_blank(),
-                    panel.border = element_blank(), panel.background = element_blank()) +
-              theme(plot.title = element_text(size = 14, family = "Tahoma", face = "bold"),
-                    text=element_text(family="Tahoma"),
-                    axis.text.x=element_text(colour="black", size = 10),
-                    axis.text.y=element_text(colour="black", size = 10),
-                    legend.key=element_rect(fill="white", colour="white"))
-              
-IndoDRCPlot1
-
-IndoDRCPlot2 <- ggplot() +
-  geom_line(aes(y = num_TC, x = year, colour = statename), size = 1, data = IndoDRC, stat="identity") +
-  geom_point(aes(y = num_TC, x = year, colour = statename), shape = 21, fill = "red", size = 2, data = Forceful, stat="identity") +
-  geom_point(aes(y = num_TC, x = year, colour = statename), shape = 21, size = 2,fill = "blue", data = Peaceful, stat="identity") +
-  scale_x_continuous(breaks=seq(1945,2010,5))+
-  scale_y_continuous(breaks=seq(0,7,1))+
-  ggtitle("Comparison of TCs Experienced by Indonesia and DRC") + labs(x="Year", y="Number of Active TCs")+
-  theme(legend.position="bottom", legend.direction="horizontal", legend.title = element_blank())+
-  theme(axis.line = element_line(size=1, colour = "black"),
-        panel.grid.major = element_line(colour = "#d3d3d3"), panel.grid.minor = element_blank(),
-        panel.border = element_blank(), panel.background = element_blank()) +
-  theme(plot.title = element_text(size = 14, family = "Tahoma", face = "bold"),
-        text=element_text(family="Tahoma"),
-        axis.text.x=element_text(colour="black", size = 10),
-        axis.text.y=element_text(colour="black", size = 10),
-        legend.key=element_rect(fill="white", colour="white"))
-
-IndoDRCPlot2 
-
-
-IndoPlot <- ggplot() +
-  geom_line(aes(y = num_TC, x = year, colour = statename), size = 1, data = Indo, stat="identity") +
-  geom_point(aes(y = num_TC, x = year, colour = statename), shape = 21, fill = "red", size = 2, data = ForcefulI, stat="identity") +
-  geom_point(aes(y = num_TC, x = year, colour = statename), shape = 21, size = 2,fill = "blue", data = PeacefulI, stat="identity") +
-  scale_x_continuous(breaks=seq(1945,2010,5))+
-  scale_y_continuous(breaks=seq(0,7,1))+
-  ggtitle("Comparison of TCs Experienced by Indonesia") + labs(x="Year", y="Number of Active TCs")+
-  theme(legend.position="bottom", legend.direction="horizontal", legend.title = element_blank())+
-  theme(axis.line = element_line(size=1, colour = "black"),
-        panel.grid.major = element_line(colour = "#d3d3d3"), panel.grid.minor = element_blank(),
-        panel.border = element_blank(), panel.background = element_blank()) +
-  theme(plot.title = element_text(size = 14, family = "Tahoma", face = "bold"),
-        text=element_text(family="Tahoma"),
-        axis.text.x=element_text(colour="black", size = 10),
-        axis.text.y=element_text(colour="black", size = 10),
-        legend.key=element_rect(fill="white", colour="white"))
-
-IndoPlot
-
-DRCPlot <- ggplot() +
-  geom_line(aes(y = num_TC, x = year), size = 1, data = DRC, stat="identity") +
-  geom_point(aes(y = num_TC, x = year), shape = 21, fill = "red", size = 2, data = ForcefulD, stat="identity") +
-  geom_point(aes(y = num_TC, x = year), shape = 21, size = 2,fill = "blue", data = PeacefulD, stat="identity") +
-  scale_y_continuous(limits = c(0,7), breaks=seq(0,7,1))+
-  scale_x_continuous(limits = c(1945,2010), breaks=seq(1945,2010,5))+
-  ggtitle("Comparison of TCs Experienced by DRC") + labs(x="Year", y="Number of Active TCs")+
-  theme(legend.position="bottom", legend.direction="horizontal", legend.title = element_blank())+
-  theme(axis.line = element_line(size=1, colour = "black"),
-        panel.grid.major = element_line(colour = "#d3d3d3"), panel.grid.minor = element_blank(),
-        panel.border = element_blank(), panel.background = element_blank()) +
-  theme(plot.title = element_text(size = 14, family = "Tahoma", face = "bold"),
-        text=element_text(family="Tahoma"),
-        axis.text.x=element_text(colour="black", size = 10),
-        axis.text.y=element_text(colour="black", size = 10),
-        legend.key=element_rect(fill="white", colour="white"))
-
-DRCPlot
-
-grid.newpage()
-grid.draw(rbind(ggplotGrob(IndoPlot), ggplotGrob(DRCPlot), size = "last"))
-
-
-
-IndoDRCPlot3 <- ggplot() +
-  geom_line(aes(y = num_TC, x = year), size = 1, data = IndoDRC, stat="identity") +
-  geom_point(aes(y = num_TC, x = year), shape = 21, fill = "red", size = 2, data = Forceful, stat="identity") +
-  geom_point(aes(y = num_TC, x = year), shape = 21, size = 2,fill = "blue", data = Peaceful, stat="identity") +
-  scale_x_continuous(breaks=seq(1945,2010,5))+
-  scale_y_continuous(limits = c(0,7), breaks=seq(0,7,1))+
-  facet_grid(statename ~ ., scales = "free_y")+
-  ggtitle("Comparison of TCs Experienced by Indonesia and DRC") + labs(x="Year", y="Number of Active TCs")+
-  theme(legend.position="bottom", legend.direction="horizontal", legend.title = element_blank())+
-  theme(axis.line = element_line(size=1, colour = "black"),
-        panel.grid.major = element_line(colour = "#d3d3d3"), panel.grid.minor = element_blank(),
-        panel.border = element_blank(), panel.background = element_blank()) +
-  theme(plot.title = element_text(size = 14, family = "Tahoma", face = "bold"),
-        text=element_text(family="Tahoma"),
-        axis.text.x=element_text(colour="black", size = 10),
-        axis.text.y=element_text(colour="black", size = 10),
-        legend.key=element_rect(fill="white", colour="white"))
-
-
-IndoDRCPlot3 
 
 # Main Results Table
 
