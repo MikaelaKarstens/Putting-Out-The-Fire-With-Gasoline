@@ -15,6 +15,7 @@ library(extrafont)
 font_import()
 loadfonts(device = "win")
 library(grid)
+library(lintr) #For maintaining coding style
 
 
 library(sampleSelection) # Package containing heckit for heckprob substitute
@@ -102,29 +103,31 @@ tc6_more_gap <- Surv(tc6_more$start, tc6_more$stop, tc6_more$new_tc_dummy)
 #Linear Decay PWP Models
 
 tc_pwp <- coxph(tc_dat_gap ~ Peace_wtc + Fighting_wtc  + Forceful_LinDecay +
-                  GoodEnd_LinDecay + polity2 + area_1000_log + lmtnest + ELF +
-                  strata(event_num) + cluster(ccode), data = tc_dat,
-                  method = "efron")
+                GoodEnd_LinDecay + polity2 + area_1000_log + lmtnest + ELF +
+                tc_tally + strata(event_num) + cluster(ccode), data = tc_dat,
+                method = "efron")
 
-tc1_pwp <- coxph(tc1_gap ~ polity2 + area_1000_log + lmtnest + ELF
-                  + strata(event_num) + cluster(ccode), data = tc1,
-                  method = "efron")
+tc1_pwp <- coxph(tc1_gap ~ polity2 + area_1000_log + lmtnest + ELF +
+                 strata(event_num) + cluster(ccode), data = tc1,
+                 method = "efron")
 
 tc23_pwp_lin20 <- coxph(tc23_gap ~ Peace_wtc + Fighting_wtc  +
-                            Forceful_LinDecay + GoodEnd_LinDecay + polity2
-                            + area_1000_log + lmtnest + ELF + strata(event_num)
-                            + cluster(ccode), data = tc23, method = "efron")
+                        Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
+                        area_1000_log + lmtnest + ELF + 
+                        strata(event_num) + cluster(ccode), data = tc23,
+                        method = "efron")
 
 tc45_pwp_lin20 <- coxph(tc45_gap ~ Peace_wtc + Fighting_wtc +
-                            Forceful_LinDecay + GoodEnd_LinDecay + polity2
-                            + area_1000_log + lmtnest + ELF + strata(event_num)
-                            + cluster(ccode), data = tc45, method = "efron")
+                        Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
+                        area_1000_log + lmtnest + ELF + 
+                        strata(event_num) + cluster(ccode), data = tc45,
+                        method = "efron")
 
 tc6_more_pwp_lin20 <- coxph(tc6_more_gap ~ Peace_wtc + Fighting_wtc  +
-                               Forceful_LinDecay + GoodEnd_LinDecay + polity2
-                               + area_1000_log + lmtnest + ELF
-                               + strata(event_num) + cluster(ccode),
-                               data = tc6_more, method = "efron")
+                            Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
+                            area_1000_log + lmtnest + ELF + 
+                            strata(event_num) + cluster(ccode),
+                            data = tc6_more, method = "efron")
 
 summary(tc_pwp)
 
@@ -146,7 +149,8 @@ stargazer(tc_pwp, tc1_pwp, tc23_pwp_lin20, tc45_pwp_lin20,
                              "Polity 2 Score",
                              "State Area (logged)",
                              "Mountains",
-                             "ELF"),
+                             "ELF",
+                             "TC Tally"),
           keep.stat = c("n"))
 
 
