@@ -16,7 +16,7 @@ font_import()
 loadfonts(device = "win")
 library(grid)
 library(lintr) #For maintaining coding style
-
+library(foreign)
 
 library(sampleSelection) # Package containing heckit for heckprob substitute
 library(lubridate) #Used for survival data formatting
