@@ -158,14 +158,14 @@ stargazer(tc_pwp, tc1_pwp, tc23_pwp_lin20, tc45_pwp_lin20, tc6_more_pwp_lin20,
 
 #Linear Decay 20 PWP Models without tally
 
-tc_pwp_no_tally <- coxph(tc_dat_gap ~ Peace_wtc + Fighting_wtc  + Forceful_LinDecay +
-                        GoodEnd_LinDecay + polity2 + area_1000_log + lmtnest + ELF +
-                  strata(event_num) + cluster(ccode), data = tc_dat,
-                method = "efron")
+tc_pwp_no_tally <- coxph(tc_dat_gap ~ Peace_wtc + Fighting_wtc  +
+                         Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
+                         area_1000_log + lmtnest + ELF + strata(event_num) +
+                         cluster(ccode), data = tc_dat, method = "efron")
 
 
-stargazer(tc_pwp_no_tally, tc1_pwp, tc23_pwp_lin20, tc45_pwp_lin20, tc6_more_pwp_lin20,
-          type = "latex",
+stargazer(tc_pwp_no_tally, tc1_pwp, tc23_pwp_lin20, tc45_pwp_lin20,
+          tc6_more_pwp_lin20, type = "latex",
           title = "PWP Gap Time Model Results - No TC Tally",
           #dep.var.labels.include = F,
           model.numbers = F,
@@ -650,8 +650,9 @@ tc45_pwp_lin20_elapse <- coxph(tc45_elapse ~ Peace_wtc + Fighting_wtc +
                                strata(event_num) + cluster(ccode), data = tc45,
                                method = "efron")
 
-tc6_more_pwp_lin20_elapse <- coxph(tc6_more_elapse ~ Peace_wtc + Fighting_wtc  +
-                                   Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
+tc6_more_pwp_lin20_elapse <- coxph(tc6_more_elapse ~ Peace_wtc +
+                                   Fighting_wtc  + Forceful_LinDecay +
+                                   GoodEnd_LinDecay + polity2 +
                                    area_1000_log + lmtnest + ELF +
                                    strata(event_num) + cluster(ccode),
                                    data = tc6_more, method = "efron")
@@ -688,15 +689,15 @@ stargazer(tc_pwp_elapse, tc1_pwp_elapse, tc23_pwp_lin20_elapse,
 
 tc_ag <- coxph(tc_dat_gap ~ Peace_wtc + Fighting_wtc +
                Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
-               area_1000_log + lmtnest + ELF +tc_tally +
-               cluster(ccode), data = tc_dat, method="efron")
+               area_1000_log + lmtnest + ELF + tc_tally +
+               cluster(ccode), data = tc_dat, method = "efron")
 
 summary(tc_ag)
 
 tc_ag_multi <- coxph(tc_multi_gap ~ Peace_wtc + Fighting_wtc +
                      Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
-                     area_1000_log + lmtnest + ELF +tc_tally +
-                     cluster(ccode), data = tc_multi, method="efron")
+                     area_1000_log + lmtnest + ELF + tc_tally +
+                     cluster(ccode), data = tc_multi, method = "efron")
 
 summary(tc_ag_multi)
 
@@ -721,15 +722,16 @@ stargazer(tc_ag, tc_ag_multi,
 # WLW Model
 
 library(plyr)
-tc_dat_expand <- tc_dat[rep(1:nrow(tc_dat), each =
-                        max(tc_dat$event_num)),]
+
+tc_dat_expand <- tc_dat[rep(seq_len(nrow(tc_dat)), each =
+                              max(tc_dat$event_num)), ]
 
 tc_dat_expand$one <- 1
 
 tc_dat_expand <- ddply(tc_dat_expand, c("ccode", "year"), mutate,
                        eventrisk = cumsum(one))
 
-tc_dat_expand$new_tc_dummy <- ifelse(tc_dat_expand$event_num == 
+tc_dat_expand$new_tc_dummy <- ifelse(tc_dat_expand$event_num ==
                                      tc_dat_expand$eventrisk &
                                      tc_dat_expand$new_tc_dummy
                                      == 1, 1, 0)
@@ -738,13 +740,13 @@ tc_dat_expand_s <- Surv(tc_dat_expand$alt_start,
                         tc_dat_expand$alt_stop,
                         tc_dat_expand$new_tc_dummy)
 
-tc_dat_WLW <- coxph(tc_dat_expand_s ~ Peace_wtc + Fighting_wtc  +
+tc_dat_wlw <- coxph(tc_dat_expand_s ~ Peace_wtc + Fighting_wtc  +
                     Forceful_LinDecay + GoodEnd_LinDecay +
                     polity2 + area_1000_log + lmtnest + ELF +
                     tc_tally + strata(event_num) + cluster(ccode),
                     data = tc_dat_expand, method = "efron")
 
-summary(tc_dat_WLW)
+summary(tc_dat_wlw)
 
 library(dplyr)
 
