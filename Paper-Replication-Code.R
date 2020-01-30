@@ -628,32 +628,33 @@ stargazer(tc_binary20, tc1_binary20, tc23_binary20, tc45_binary20,
 
 #Linear Decay 20 PWP  Elapsed Models
 
-tc_pwp_elapse <- coxph(tc_dat_elapse ~ Peace_wtc + Fighting_wtc  + Forceful_LinDecay +
-                  GoodEnd_LinDecay + polity2 + area_1000_log + lmtnest + ELF +
-                  tc_tally + strata(event_num) + cluster(ccode), data = tc_dat,
-                method = "efron")
+tc_pwp_elapse <- coxph(tc_dat_elapse ~ Peace_wtc + Fighting_wtc  +
+                       Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
+                       area_1000_log + lmtnest + ELF + tc_tally +
+                       strata(event_num) + cluster(ccode), data = tc_dat,
+                       method = "efron")
 
 tc1_pwp_elapse <- coxph(tc1_elapse ~ polity2 + area_1000_log + lmtnest + ELF +
-                   strata(event_num) + cluster(ccode), data = tc1,
-                 method = "efron")
+                        strata(event_num) + cluster(ccode), data = tc1,
+                        method = "efron")
 
 tc23_pwp_lin20_elapse <- coxph(tc23_elapse ~ Peace_wtc + Fighting_wtc  +
-                          Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
-                          area_1000_log + lmtnest + ELF +
-                          strata(event_num) + cluster(ccode), data = tc23,
-                        method = "efron")
+                               Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
+                               area_1000_log + lmtnest + ELF +
+                               strata(event_num) + cluster(ccode), data = tc23,
+                               method = "efron")
 
 tc45_pwp_lin20_elapse <- coxph(tc45_elapse ~ Peace_wtc + Fighting_wtc +
-                          Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
-                          area_1000_log + lmtnest + ELF +
-                          strata(event_num) + cluster(ccode), data = tc45,
-                        method = "efron")
+                               Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
+                               area_1000_log + lmtnest + ELF +
+                               strata(event_num) + cluster(ccode), data = tc45,
+                               method = "efron")
 
 tc6_more_pwp_lin20_elapse <- coxph(tc6_more_elapse ~ Peace_wtc + Fighting_wtc  +
-                              Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
-                              area_1000_log + lmtnest + ELF +
-                              strata(event_num) + cluster(ccode),
-                            data = tc6_more, method = "efron")
+                                   Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
+                                   area_1000_log + lmtnest + ELF +
+                                   strata(event_num) + cluster(ccode),
+                                   data = tc6_more, method = "efron")
 
 summary(tc_pwp_elapse)
 
@@ -686,15 +687,17 @@ stargazer(tc_pwp_elapse, tc1_pwp_elapse, tc23_pwp_lin20_elapse,
 # Anderson-Gill Model - AG
 
 tc_ag <- coxph(tc_dat_gap ~ Peace_wtc + Fighting_wtc +
-                     Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
-                     area_1000_log + lmtnest + ELF +tc_tally +
-                     cluster(ccode), data = tc_dat, method="efron")
+               Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
+               area_1000_log + lmtnest + ELF +tc_tally +
+               cluster(ccode), data = tc_dat, method="efron")
+
 summary(tc_ag)
 
 tc_ag_multi <- coxph(tc_multi_gap ~ Peace_wtc + Fighting_wtc +
-                 Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
-                 area_1000_log + lmtnest + ELF +tc_tally +
-                 cluster(ccode), data = tc_multi, method="efron")
+                     Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
+                     area_1000_log + lmtnest + ELF +tc_tally +
+                     cluster(ccode), data = tc_multi, method="efron")
+
 summary(tc_ag_multi)
 
 stargazer(tc_ag, tc_ag_multi,
@@ -720,9 +723,12 @@ stargazer(tc_ag, tc_ag_multi,
 library(plyr)
 tc_dat_expand <- tc_dat[rep(1:nrow(tc_dat), each =
                         max(tc_dat$event_num)),]
+
 tc_dat_expand$one <- 1
+
 tc_dat_expand <- ddply(tc_dat_expand, c("ccode", "year"), mutate,
                        eventrisk = cumsum(one))
+
 tc_dat_expand$new_tc_dummy <- ifelse(tc_dat_expand$event_num == 
                                      tc_dat_expand$eventrisk &
                                      tc_dat_expand$new_tc_dummy
@@ -733,9 +739,9 @@ tc_dat_expand_s <- Surv(tc_dat_expand$alt_start,
                         tc_dat_expand$new_tc_dummy)
 
 tc_dat_WLW <- coxph(tc_dat_expand_s ~ Peace_wtc + Fighting_wtc  +
-                      Forceful_LinDecay + GoodEnd_LinDecay +
-                      polity2 + area_1000_log + lmtnest + ELF +
-                      tc_tally + strata(event_num) + cluster(ccode),
+                    Forceful_LinDecay + GoodEnd_LinDecay +
+                    polity2 + area_1000_log + lmtnest + ELF +
+                    tc_tally + strata(event_num) + cluster(ccode),
                     data = tc_dat_expand, method = "efron")
 
 summary(tc_dat_WLW)
@@ -759,14 +765,14 @@ stargazer(tc_dat_WLW,
                                "TC Tally"),
           keep.stat = c("n"))
 
-# Hurdle Model - This seems so wrong. Its just lumping everything together.
+# Hurdle Model - Basic Poisson-Logit
 
 hurdlemod <- hurdle(tc_tally ~ Peace_wtc + Fighting_wtc  +
                     Forceful_LinDecay + GoodEnd_LinDecay + polity2 +
                     area_1000_log + lmtnest + ELF | polity2 +
-                    area_1000_log + lmtnest + ELF, data = tc_dat,
-                    dist = c("poisson"), zero.dist = c("poisson"),
-                    link = c("logit"))
+                    area_1000_log + lmtnest + ELF + Country_Age,
+                    data = tc_dat, dist = c("poisson"),
+                    zero.dist = c("poisson"), link = c("logit"))
 
 summary(hurdlemod)
 
