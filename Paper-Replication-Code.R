@@ -916,4 +916,4 @@ summary(tc45_frail_gaus)
 summary(tc6_more_frail_gaus)
   # D5 - Censored Probit - In Stata do-file ====================================
   # D6 - Zero-Inflated Negative Binomial - In Stata do-file ====================
-  # D7 - Hurdle Hurdle Model - In Stata do-file ==============================
+  # D7 - Hurdle Hurdle Model - In Stata do-file ================================
