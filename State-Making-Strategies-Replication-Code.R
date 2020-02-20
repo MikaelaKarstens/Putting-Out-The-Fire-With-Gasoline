@@ -83,6 +83,7 @@ tc6_more_elapse <- Surv(tc6_more$alt_start, tc6_more$alt_stop,
 tc6_more_gap <- Surv(tc6_more$start, tc6_more$stop, tc6_more$new_tc_dummy)
 
 # Code for Tables in the Main Text of the Article ==============================
+  
   # Table 1 - 20 Year Linear Decay PWP Gap Time Models =========================
 
 tc_pwp <- coxph(tc_dat_gap ~ peace_wtc + fighting_wtc  + force_lin_decay +
@@ -249,20 +250,20 @@ tc1_pwp_ss <- coxph(tc1_gap ~ lib_dem_vdem + area_1000_log + lmtnest + elf +
                     strata(event_num) + cluster(ccode), data = tc1,
                     method = "efron")
 
-tc23_pwp_ss <- coxph(tc23_gap ~ peace_wtc + favor_ss_lin_decay  +
+tc23_pwp_ss <- coxph(tc23_gap ~ peace_wtc + fighting_wtc + favor_ss_lin_decay  +
                      favor_tc_lin_decay + lib_dem_vdem +
                      area_1000_log + lmtnest + elf +
                      strata(event_num) + cluster(ccode), data = tc23,
                      method = "efron")
 
-tc45_pwp_ss <- coxph(tc45_gap ~ peace_wtc + favor_ss_lin_decay +
+tc45_pwp_ss <- coxph(tc45_gap ~ peace_wtc + fighting_wtc + favor_ss_lin_decay +
                      favor_tc_lin_decay + lib_dem_vdem +
                      area_1000_log + lmtnest + elf +
                      strata(event_num) + cluster(ccode), data = tc45,
                      method = "efron")
 
-tc6_more_pwp_ss <- coxph(tc6_more_gap ~ peace_wtc + favor_ss_lin_decay  +
-                         favor_tc_lin_decay +
+tc6_more_pwp_ss <- coxph(tc6_more_gap ~ peace_wtc + fighting_wtc +
+                         favor_ss_lin_decay  + favor_tc_lin_decay +
                          lib_dem_vdem + area_1000_log + lmtnest + elf +
                          strata(event_num) + cluster(ccode),
                          data = tc6_more, method = "efron")
@@ -297,8 +298,8 @@ tc_pwp_sf <- coxph(tc_dat_gap ~ peace_wtc + fighting_wtc  + force_lin_decay +
                   method = "efron")
 
 tc1_pwp_sf <- coxph(tc1_gap ~ lib_dem_vdem + area_1000_log + lmtnest + elf +
-                   strata(event_num) + cluster(ccode), data = tc1,
-                 method = "efron")
+                    state_fail + strata(event_num) + cluster(ccode), data = tc1,
+                    method = "efron")
 
 tc23_pwp_sf <- coxph(tc23_gap ~ peace_wtc + fighting_wtc  +
                      force_lin_decay + favor_tc_lin_decay +
@@ -440,6 +441,59 @@ stargazer(tc_pwp_elec, tc1_pwp_elec, tc23_pwp_elec, tc45_pwp_elec,
                                "State Area (logged)",
                                "Mountains",
                                "ELF",
+                               "TC Tally"),
+          keep.stat = c("n"))
+
+# B6 - PWP Gap Time Model 20 Year Linear Decay - Birth Type Control ============
+
+tc_pwp_bt <- coxph(tc_dat_gap ~ peace_wtc + fighting_wtc  + force_lin_decay +
+                     favor_tc_lin_decay + absorb_lin_decay + lib_dem_vdem +
+                     area_1000_log + lmtnest + elf + birth_type + tc_tally +
+                     strata(event_num) + cluster(ccode), data = tc_dat,
+                   method = "efron")
+
+tc1_pwp_bt <- coxph(tc1_gap ~ lib_dem_vdem + area_1000_log + lmtnest + elf +
+                    birth_type + strata(event_num) + cluster(ccode), data = tc1,
+                    method = "efron")
+
+tc23_pwp_bt <- coxph(tc23_gap ~ peace_wtc + fighting_wtc  +
+                       force_lin_decay + favor_tc_lin_decay +
+                       absorb_lin_decay + lib_dem_vdem + area_1000_log +
+                       lmtnest + elf + birth_type + strata(event_num) +
+                       cluster(ccode), data = tc23, method = "efron")
+
+tc45_pwp_bt <- coxph(tc45_gap ~ peace_wtc + fighting_wtc +
+                       force_lin_decay + favor_tc_lin_decay +
+                       absorb_lin_decay + lib_dem_vdem + area_1000_log +
+                       lmtnest + elf + birth_type + strata(event_num) +
+                       cluster(ccode), data = tc45, method = "efron")
+
+tc6_more_pwp_bt <- coxph(tc6_more_gap ~ peace_wtc + fighting_wtc  +
+                           force_lin_decay + favor_tc_lin_decay +
+                           absorb_lin_decay + lib_dem_vdem + area_1000_log +
+                           lmtnest + elf + birth_type + strata(event_num) +
+                           cluster(ccode), data = tc6_more, method = "efron")
+
+stargazer(tc_pwp_bt, tc1_pwp_bt, tc23_pwp_bt, tc45_pwp_bt, tc6_more_pwp_bt,
+          type = "latex",
+          title = "PWP Gap Time Model Results - Birth Type",
+          model.numbers = F,
+          column.labels = c("All TCs",
+                            "First TC",
+                            " TC 2 or 3",
+                            "TC 4 or 5",
+                            "TC 6+"),
+          dep.var.labels = c("(1)", "(2)", "(3)", "(4)", "(5)"),
+          covariate.labels = c("Peace w/ TC",
+                               "Fighting w/ TC",
+                               "Favorable Outcome for State",
+                               "Favorable Outcome for TC",
+                               "Absorbed",
+                               "Liberal Democracy Index",
+                               "State Area (logged)",
+                               "Mountains",
+                               "ELF",
+                               "Birth Type",
                                "TC Tally"),
           keep.stat = c("n"))
 
@@ -838,7 +892,7 @@ stargazer(tc_dat_wlw,
           keep.stat = c("n"))
 
   # D3 - Conditional Frailty Model - Gamma =====================================
-
+set.seed(1212)
 tc_dat_gamma <- coxph(tc_dat_gap ~ peace_wtc + fighting_wtc  +
                       force_lin_decay + favor_tc_lin_decay +
                       absorb_lin_decay + lib_dem_vdem + area_1000_log +
@@ -869,12 +923,13 @@ tc6_more_frail_gamma <- coxph(tc6_more_gap ~ peace_wtc + fighting_wtc  +
                               lmtnest + elf + + frailty.gamma(ccode) +
                               strata(event_num),
                               data = tc6_more, method = "efron")
-
+# Appendix Table 16 Manually Created
 summary(tc_dat_gamma)
 summary(tc1_frail_gamma)
 summary(tc23_frail_gamma)
 summary(tc45_frail_gamma)
 summary(tc6_more_frail_gamma)
+
 
   # D4 - Conditional Frailty Model - Gaussian ==================================
 
@@ -914,6 +969,21 @@ summary(tc1_frail_gaus)
 summary(tc23_frail_gaus)
 summary(tc45_frail_gaus)
 summary(tc6_more_frail_gaus)
-  # D5 - Censored Probit - In Stata do-file ====================================
-  # D6 - Zero-Inflated Negative Binomial - In Stata do-file ====================
-  # D7 - Hurdle Hurdle Model - In Stata do-file ================================
+
+# D5 - Censored Probit - In Stata do-file ====================================
+
+# D6 - Zero-Inflated Negative Binomial - In Stata do-file ====================
+
+# D7 - Hurdle Hurdle Model - In Stata do-file ================================
+
+merg <- read.csv("Survival-Data-TC-1-10-20.csv")
+names(merg)
+merg$unique_id <- merg$ccode + merg$year/10000
+merg2 <- select(merg, unique_id, BirthType)
+names(merg2)
+merg2$birth_type <- merg2$BirthType
+merg2$BirthType <- NULL
+merge <- left_join(tc_dat, merg2, "unique_id")
+merge$X <- NULL
+write.csv(merge, "State-Making-Strategies-Replication-Data.csv")
+write.dta(merge, "State-Making-Strategies-Replication-Data.dta")
