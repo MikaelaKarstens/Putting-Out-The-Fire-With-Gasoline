@@ -17,7 +17,7 @@ options(scipen = 50) # bias against scientific notation for convenience
 
 # Loading data =================================================================
 
-tc_dat <- read.csv("Putting-Out-The-Fire-With-Gasoline2.csv")
+tc_dat <- read.csv("Putting-Out-The-Fire-With-Gasoline.csv")
 names(tc_dat)
 
 
@@ -374,7 +374,7 @@ allmod$tc <- factor(allmod$tc, levels = c("4+", "2-3", "First TC", "All TCs"))
 
 elapse_fig <- ggplot(allmod, aes(colour = tc))
 elapse_fig <- elapse_fig +
-              scale_color_viridis_d(option = "C",
+              scale_color_viridis_d(option = "D",
                                     breaks = c("All TCs", "First TC",
                                                "2-3", "4+"),
                                     name = "TC Number")
